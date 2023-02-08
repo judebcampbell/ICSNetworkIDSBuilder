@@ -1,0 +1,1 @@
+{"SGDC__loss": ["hinge", "log_loss", "log", "modified_huber", "squared_hinge", "perceptron", "epsilon_insensitive"], "SGDC__penalty": ["l1", "l2", "elasticnet", null], "SGDC__learning_rate": ["optimal", "adaptive"]}
