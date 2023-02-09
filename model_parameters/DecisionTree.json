@@ -1,0 +1,4 @@
+{"DecisionTree__criterion" : ["gini", "entropy"],
+"DecisionTree__splitter" : ["best", "random"],
+"DecisionTree__max_depth" : [1, 2, 3, 5]
+}

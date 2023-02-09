@@ -1,1 +1,1 @@
-{"SVC__kernel": ["linear", "rbf", "sigmoid"], "SVC__gamma": [0, 2, 5, 7, 10], "SVC__C": [0.1, 1, 5, 10]}
+{"SVC__kernel": ["linear", "rbf", "sigmoid"], "SVC__gamma": [0.1, 2, 5, 7, 10], "SVC__C": [0.1, 1, 5, 10]}

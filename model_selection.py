@@ -5,6 +5,18 @@ Contains all functions related to training and tuning models
 '''
 
 import json
+import os
+
+from sklearn.model_selection import KFold
+from sklearn.pipeline import Pipeline
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.linear_model import SGDClassifier
+from sklearn.naive_bayes import GaussianNB
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.svm import SVC
+from sklearn.model_selection import RandomizedSearchCV
+from sklearn.model_selection import cross_validate
 
 '''
 Function returns a set of pipelines for training; range of models used.
@@ -43,7 +55,7 @@ def trainModels(X,Y,k=5):
 		kfold = KFold(n_splits=k)
 		# https://scikit-learn.org/stable/modules/model_evaluation.html#scoring-parameter
 		crossv_results =  cross_validate(model, X, Y, cv=kfold, scoring=['balanced_accuracy',
-						 'f1', 'precision', 'recall', 'roc_auc'])
+						 'f1', 'precision', 'recall'])
 
 		results.append(crossv_results)
 		model_names.append(pipe)
@@ -64,7 +76,7 @@ outputs:
 	results -  list with dictionary containing, times and scores
 	models -  list containing the optimised models
 '''
-def hyperparameterTuning(model_names, pipelines, X, Y, k=10):
+def hyperparameterTuning(model_names, pipelines, X, Y, k=5):
 
 	results = []
 	tuned_models = []
@@ -72,7 +84,7 @@ def hyperparameterTuning(model_names, pipelines, X, Y, k=10):
 	for pipe, model in pipelines:
 		if pipe in model_names:
 			print('\n\nTuning ' + str(pipe))
-			filecomposed = 'model_parameters/' + str(search)  + '.json'
+			filecomposed = 'model_parameters/' + str(pipe)  + '.json'
 			if os.path.isfile(filecomposed):
 				f = open(filecomposed)
 				params = json.load(f)
@@ -80,8 +92,8 @@ def hyperparameterTuning(model_names, pipelines, X, Y, k=10):
 			clf = RandomizedSearchCV(estimator=model, param_distributions=params, cv=k)
 			search = clf.fit(X, Y)
 
-			crossv_results =  cross_validate(search.best_estimator_, X, Y, cv=kfold, 
-							scoring=['balanced_accuracy', 'f1', 'precision', 'recall', 'roc_auc']
+			crossv_results =  cross_validate(search.best_estimator_, X, Y, cv=k, 
+							scoring=['balanced_accuracy', 'f1', 'precision', 'recall']
 						)
 
 			results.append(crossv_results)

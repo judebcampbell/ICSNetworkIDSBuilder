@@ -5,6 +5,20 @@ contains all functinos necessary to pre-process data
 '''
 
 
+import numpy as np
+import pandas as pd
+
+
+'''
+Function to read in target classes into a list
+'''
+def targetReader(filename):
+	targets = []
+	with open(filename, "r") as f:
+		for line in f:
+			targets.append(int(line.strip()))
+	
+	return(targets)
 
 '''Function takes read pcap/pcapng file and generates feature vectors
 		file - opened pcap/pcapng with Scapy
@@ -152,9 +166,6 @@ def timestamps(file, labels, frequency=30):
 
 	label_counter = 0
 	targets = []
-
-	print(len(labels))
-	print(total_packets)
 	
 	while counter < total_packets:
 		
@@ -183,7 +194,7 @@ def timestamps(file, labels, frequency=30):
 
 		#Collect relevant information from the packets in current timestamp
 		while currentVectorTime < frequency:
-			if IP not in file[counter] or TCP not in file[counter]:
+			if 'IP' not in file[counter] or 'TCP' not in file[counter]:
 				counter += 1
 				continue
 
