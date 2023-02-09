@@ -7,9 +7,19 @@
 
 
 from PyQt6 import QtCore, QtGui, QtWidgets
+
+import user_steps as us
+
 import os
 
+
 class Ui_MainWindow(object):
+    def __init__(self):
+        self.trainingFileFound = False
+        self.targetFileFound = False
+        self.trainingfile = ''
+        self.targetfile = ''
+
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(598, 592)
@@ -32,31 +42,43 @@ class Ui_MainWindow(object):
         self.ImportModelLabel.setFont(font)
         self.ImportModelLabel.setObjectName("ImportModelLabel")
         self.FullProcess = QtWidgets.QWidget(parent=self.centralwidget)
-        self.FullProcess.setGeometry(QtCore.QRect(20, 50, 271, 121))
+        self.FullProcess.setGeometry(QtCore.QRect(20, 50, 271, 151))
         self.FullProcess.setObjectName("FullProcess")
         self.label_3 = QtWidgets.QLabel(parent=self.FullProcess)
         self.label_3.setEnabled(True)
         self.label_3.setGeometry(QtCore.QRect(10, 10, 81, 16))
         self.label_3.setObjectName("label_3")
         self.FullButton = QtWidgets.QPushButton(parent=self.FullProcess)
-        self.FullButton.setGeometry(QtCore.QRect(160, 90, 100, 32))
+        self.FullButton.setGeometry(QtCore.QRect(160, 120, 100, 32))
         self.FullButton.setObjectName("FullButton")
+        self.FullButton.setEnabled(False)
+    
         self.targetFileInput = QtWidgets.QLineEdit(parent=self.FullProcess)
         self.targetFileInput.setGeometry(QtCore.QRect(150, 40, 113, 21))
         self.targetFileInput.setObjectName("targetFileInput")
+
+        self.targetFileInput.textChanged.connect(self.fileExists)
+
         self.fileInput = QtWidgets.QLineEdit(parent=self.FullProcess)
         self.fileInput.setGeometry(QtCore.QRect(150, 10, 113, 21))
         self.fileInput.setObjectName("fileInput")
-        #self.fileInput.textChanged.connect(self.checkFileExists())
+
+        self.fileInput.textChanged.connect(self.fileExists)
+        self.FullButton.clicked.connect(lambda: us.fullToLive(self.trainingfile, self.targetfile))
+        print(self.fileInput.text())
+
         self.label_4 = QtWidgets.QLabel(parent=self.FullProcess)
         self.label_4.setEnabled(True)
         self.label_4.setGeometry(QtCore.QRect(10, 40, 101, 16))
         self.label_4.setObjectName("label_4")
         self.outputCheck = QtWidgets.QCheckBox(parent=self.FullProcess)
-        self.outputCheck.setGeometry(QtCore.QRect(10, 70, 251, 20))
+        self.outputCheck.setGeometry(QtCore.QRect(10, 100, 251, 20))
         self.outputCheck.setObjectName("outputCheck")
+        self.fileNameTest = QtWidgets.QLabel(parent=self.FullProcess)
+        self.fileNameTest.setGeometry(QtCore.QRect(20, 70, 58, 16))
+        self.fileNameTest.setObjectName("fileNameTest")
         self.OpenModel = QtWidgets.QWidget(parent=self.centralwidget)
-        self.OpenModel.setGeometry(QtCore.QRect(320, 50, 261, 121))
+        self.OpenModel.setGeometry(QtCore.QRect(320, 50, 261, 151))
         self.OpenModel.setObjectName("OpenModel")
         self.lineEdit_5 = QtWidgets.QLineEdit(parent=self.OpenModel)
         self.lineEdit_5.setGeometry(QtCore.QRect(140, 10, 113, 21))
@@ -69,7 +91,7 @@ class Ui_MainWindow(object):
         self.openModelButton.setGeometry(QtCore.QRect(150, 80, 100, 32))
         self.openModelButton.setObjectName("openModelButton")
         self.ModelSelector = QtWidgets.QWidget(parent=self.centralwidget)
-        self.ModelSelector.setGeometry(QtCore.QRect(20, 210, 271, 121))
+        self.ModelSelector.setGeometry(QtCore.QRect(150, 230, 271, 121))
         self.ModelSelector.setObjectName("ModelSelector")
         self.label_5 = QtWidgets.QLabel(parent=self.ModelSelector)
         self.label_5.setEnabled(True)
@@ -89,7 +111,7 @@ class Ui_MainWindow(object):
         self.label_6.setGeometry(QtCore.QRect(10, 40, 101, 16))
         self.label_6.setObjectName("label_6")
         self.ModelonOtherDataLabel = QtWidgets.QLabel(parent=self.centralwidget)
-        self.ModelonOtherDataLabel.setGeometry(QtCore.QRect(20, 190, 321, 16))
+        self.ModelonOtherDataLabel.setGeometry(QtCore.QRect(150, 210, 321, 16))
         font = QtGui.QFont()
         font.setFamily("Arial")
         font.setPointSize(14)
@@ -97,7 +119,7 @@ class Ui_MainWindow(object):
         self.ModelonOtherDataLabel.setFont(font)
         self.ModelonOtherDataLabel.setObjectName("ModelonOtherDataLabel")
         self.textBrowser = QtWidgets.QTextBrowser(parent=self.centralwidget)
-        self.textBrowser.setGeometry(QtCore.QRect(170, 340, 256, 192))
+        self.textBrowser.setGeometry(QtCore.QRect(160, 350, 256, 192))
         self.textBrowser.setObjectName("textBrowser")
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(parent=MainWindow)
@@ -120,15 +142,28 @@ class Ui_MainWindow(object):
         self.FullButton.setText(_translate("MainWindow", "Find Files"))
         self.label_4.setText(_translate("MainWindow", "Class File Name:"))
         self.outputCheck.setText(_translate("MainWindow", "                   Include Training Summaries"))
+        self.fileNameTest.setText(_translate("MainWindow", "FileName -"))
         self.label_7.setText(_translate("MainWindow", "Model Name:"))
         self.openModelButton.setText(_translate("MainWindow", "Open Model"))
         self.label_5.setText(_translate("MainWindow", "File Name:"))
         self.pushButton_2.setText(_translate("MainWindow", "Find Files"))
         self.label_6.setText(_translate("MainWindow", "Class File Name:"))
         self.ModelonOtherDataLabel.setText(_translate("MainWindow", "Create a new model with different data:"))
-    
-    def checkFileExists(self):
-        if os.path.isfile(self):
-            return(True)
+
+    def fileExists(self):
+        if os.path.isfile(self.fileInput.text()):
+            self.fileNameTest.setText("File Exists")
+            self.trainingFileFound = True
+            self.trainingfile = self.fileInput.text()
         else:
-            return(False)
+            self.trainingFileFound = False
+
+        if os.path.isfile(self.targetFileInput.text()):
+            self.trainingTargetsFound = True
+            self.targetfile = self.targetFileInput.text()
+        else:
+            self.trainingTargetsFound = False
+    
+        if self.trainingFileFound == True and self.trainingTargetsFound == True:
+                self.FullButton.setEnabled(True)
+        return
