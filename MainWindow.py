@@ -7,6 +7,8 @@
 
 
 from PyQt6 import QtCore, QtGui, QtWidgets
+from pyqtgraph import PlotWidget, plot
+import pyqtgraph as pg
 
 import user_steps as us
 
@@ -19,6 +21,8 @@ class Ui_MainWindow(object):
         self.targetFileFound = False
         self.trainingfile = ''
         self.targetfile = ''
+        self.modelNames = []
+        self.trainingResults = []
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -64,8 +68,7 @@ class Ui_MainWindow(object):
         self.fileInput.setObjectName("fileInput")
 
         self.fileInput.textChanged.connect(self.fileExists)
-        self.FullButton.clicked.connect(lambda: us.fullToLive(self.trainingfile, self.targetfile))
-        print(self.fileInput.text())
+        self.FullButton.clicked.connect(self.handleStory)
 
         self.label_4 = QtWidgets.QLabel(parent=self.FullProcess)
         self.label_4.setEnabled(True)
@@ -118,9 +121,12 @@ class Ui_MainWindow(object):
         font.setBold(True)
         self.ModelonOtherDataLabel.setFont(font)
         self.ModelonOtherDataLabel.setObjectName("ModelonOtherDataLabel")
-        self.textBrowser = QtWidgets.QTextBrowser(parent=self.centralwidget)
-        self.textBrowser.setGeometry(QtCore.QRect(160, 350, 256, 192))
-        self.textBrowser.setObjectName("textBrowser")
+        
+        self.graphWidget = pg.PlotWidget(parent=self.centralwidget)
+        self.graphWidget.setBackground('w')
+        self.graphWidget.setGeometry(QtCore.QRect(160, 350, 256, 192)) 
+    
+
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(parent=MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 598, 24))
@@ -159,6 +165,7 @@ class Ui_MainWindow(object):
             self.trainingFileFound = False
 
         if os.path.isfile(self.targetFileInput.text()):
+            self.fileNameTest.setText("Target File Exists")
             self.trainingTargetsFound = True
             self.targetfile = self.targetFileInput.text()
         else:
@@ -167,3 +174,25 @@ class Ui_MainWindow(object):
         if self.trainingFileFound == True and self.trainingTargetsFound == True:
                 self.FullButton.setEnabled(True)
         return
+    
+    def handleStory(self):
+        self.modelNames, self.trainingResults = us.fullToLive(self.trainingfile, self.targetfile)
+        self.fileNameTest.setText(self.modelNames[0])
+        x = []
+        y = []
+        #self.fileNameTest.setText(self.trainingResults[0])
+        print(self.trainingResults)
+        print(self.trainingResults[0])
+        for i in range(len(self.modelNames)):
+            for j in range(len(self.trainingResults[i]['test_f1'])):
+                y.append(self.trainingResults[i]['test_f1'][j])
+                x.append(i)
+
+        scatter = pg.ScatterPlotItem(
+            size=5, brush=pg.mkBrush(30, 25, 188, 255))
+        scatter.addPoints(x, y)
+
+
+        self.graphWidget.addItem(scatter)
+
+

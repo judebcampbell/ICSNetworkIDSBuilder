@@ -33,10 +33,13 @@ def fullToLive(file, targetFile):
 	training, targets = dp.timestamps(openedFile, labels, 5) # transform training data and targets
 	model_names, results, pipelines = ms.trainModels(training, targets) #train the initial models
 	best_model_names = ms.evaluateModels(results, model_names, 3) # find the 3 best models
-	model_names, results, tuned_models = ms.hyperparameterTuning(best_model_names, pipelines, training, targets)
-	final_name, final_model = ms.evaluateModels(results, model_names, 1, tuned_models)
+	tuned_model_names, tuned_results, tuned_models = ms.hyperparameterTuning(best_model_names, pipelines, training, targets)
+	final_name, final_model = ms.evaluateModels(tuned_results, tuned_model_names, 1, tuned_models)
 	final_name = final_name[0]
 	fm.saveBestModel(final_model, final_name, nameFile=False)
+
+	return(model_names, results)
+
 
 
 '''
@@ -48,10 +51,13 @@ def modelSelectionNoProcessing(file, targets):
 
 	model_names, results, pipelines = ms.trainModels(training, targets) #train the initial models
 	best_model_names = ms.evaluateModels(results, model_names, 3) # find the 3 best models
-	model_names, results, tuned_models = ms.hyperparameterTuning(best_model_names, pipelines, training, targets)
-	final_name, final_model = ms.evaluateModels(results, model_names, 1, tuned_models)
+	tuned_model_names, tuned_results, tuned_models = ms.hyperparameterTuning(best_model_names, pipelines, training, targets)
+	final_name, final_model = ms.evaluateModels(tuned_results, tuned_model_names, 1, tuned_models)
 	final_name = final_name[0]
 	fm.saveBestModel(final_model, final_name, nameFile=False)
+
+
+
 
 
 # Testing section to ensure functions work correctly
