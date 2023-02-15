@@ -23,8 +23,37 @@ def l4AttackGenerator(openfilename):
 	
 	return(labels)
 
-filename = 'CaptureW64'
-labels = l4AttackGenerator('data/initial_tests/CaptureW64.pcapng')
+def l5AttackGenerator(openfilename):
+	openfile = rdpcap(openfilename)
+	labels = []
+	#totalLength = int(len(openfile))
+	openfile[0].show()
+	for pkt in openfile:
+		if IP not in pkt or TCP not in pkt:
+			if ARP in pkt:
+				labels.append(1)
+			else:
+				labels.append(0)
+			continue
+
+
+
+		if pkt['IP'].src == "ASUSTekC_13:0b:13":
+			labels.append(1)
+		elif pkt['IP'].proto == "ARP":
+			print("FOUND")
+			labels.append(1)
+		elif pkt['IP'].src == "192.168.5.90" and pkt["IP"].dst == "192.168.5.109":
+			labels.append(1)
+		elif pkt['IP'].src == "192.168.5.109":
+			labels.append(1)
+		else:
+			labels.append(0)
+	
+	return(labels)
+
+filename = 'runningW109Stop'
+labels = l5AttackGenerator('data/initial_tests/runningW109Stop.pcapng')
 
 classfilename = 'data/initial_tests/' + filename + 'TARGETS.txt'
 

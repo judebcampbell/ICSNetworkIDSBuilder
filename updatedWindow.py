@@ -7,6 +7,7 @@
 
 
 from PyQt6 import QtCore, QtGui, QtWidgets
+from PyQt6.QtGui import QPixmap
 
 import matplotlib
 matplotlib.use('QT5Agg')
@@ -18,8 +19,6 @@ from matplotlib.backends.backend_qt5agg import (
 from matplotlib.figure import Figure
 
 import matplotlib.pyplot as plt
-
-from mplwidget import MplWidget, MplCanvas
 
 import os
 
@@ -343,7 +342,12 @@ class Ui_MainWindow(object):
             self.StartBUTTON.setEnabled(True)
 
         return
-    
+
+    def showPlots(self):
+        pixmap = QPixmap('figures/boxplotsTimes.png')
+        pixmap = pixmap.scaled(self.timeOutputLABEL.width(), self.timeOutputLABEL.height())
+        self.timeOutputLABEL.setPixmap(pixmap)
+
     def handleStory(self):
         if self.PreprocessingCHECK.isChecked():
             self.modelNames, self.trainResults, self.oModelNames, self.oResults = us.fullToLive(self.trainingfile, self.targetfile)
@@ -355,12 +359,10 @@ class Ui_MainWindow(object):
 
         # Enable the output window
         self.graphOutputWIDGET.setEnabled(True)
+        self.showPlots()
+        
     
-    def plot(self):
-        ax.self.figure.add_subplot(111)
-
-        trainResults = 0
-        ax.boxplot(results,patch_artist=True,boxprops = dict(linestyle='-', linewidth=1, color='tab:pink', facecolor= 'tab:pink'), whiskerprops={"color": 'k', "linewidth": 1.5}, capprops={"color": 'k',  "linewidth": 1.5},  medianprops={"color": "k", "linewidth": 1})
+   
 
 
 

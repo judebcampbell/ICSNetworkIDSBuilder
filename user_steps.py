@@ -31,7 +31,7 @@ Function for finding best model including data processing
 def fullToLive(file, targetFile):
 	openedFile = rdpcap(file)
 	labels = fm.toList(targetFile) # generate target list
-	training, targets = dp.timestamps(openedFile, labels, 1) # transform training data and targets
+	training, targets = dp.timestamps(openedFile, labels, 5) # transform training data and targets
 
 	print("\n class balance normal to abnormal in the original data")
 	print(gp.class_balance_binary(labels))
@@ -44,6 +44,8 @@ def fullToLive(file, targetFile):
 	final_name, final_model = ms.evaluateModels(tuned_results, tuned_model_names, 1, tuned_models)
 	final_name = final_name[0]
 	fm.saveBestModel(final_model, final_name, nameFile=False)
+
+	gp.balancedAccuracy_boxplot(results, model_names)
 	return(model_names, results, tuned_model_names, tuned_results)
 
 
@@ -61,6 +63,8 @@ def modelSelectionNoProcessing(file, targets):
 	final_name, final_model = ms.evaluateModels(tuned_results, tuned_model_names, 1, tuned_models)
 	final_name = final_name[0]
 	fm.saveBestModel(final_model, final_name, nameFile=False)
+
+	
 
 
 
