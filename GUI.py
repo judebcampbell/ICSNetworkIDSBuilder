@@ -1,7 +1,8 @@
 import sys
 from PyQt6 import QtWidgets, uic
 
-from MainWindow import Ui_MainWindow
+#from MainWindow import Ui_MainWindow
+from updatedWindow import Ui_MainWindow
 
 
 class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
