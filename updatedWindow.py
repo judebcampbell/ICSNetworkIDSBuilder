@@ -44,7 +44,7 @@ class Ui_MainWindow(object):
         
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(669, 600)
+        MainWindow.resize(669, 800)
         self.centralwidget = QtWidgets.QWidget(parent=MainWindow)
         self.centralwidget.setObjectName("centralwidget")
 
@@ -163,13 +163,13 @@ class Ui_MainWindow(object):
 
         # Output WIDGET at the bottom of the SCREEN
         self.graphOutputWIDGET = QtWidgets.QWidget(parent=self.centralwidget)
-        self.graphOutputWIDGET.setEnabled(False)
-        self.graphOutputWIDGET.setGeometry(QtCore.QRect(10, 270, 641, 271))
+        self.graphOutputWIDGET.setEnabled(True)
+        self.graphOutputWIDGET.setGeometry(QtCore.QRect(10, 270, 641, 481))
         self.graphOutputWIDGET.setObjectName("graphOutputWIDGET")
 
         # TAB WIDGET for different graphs based on metrics 
         self.tabWidget = QtWidgets.QTabWidget(parent=self.graphOutputWIDGET)
-        self.tabWidget.setGeometry(QtCore.QRect(-1, -1, 381, 261))
+        self.tabWidget.setGeometry(QtCore.QRect(10, 140, 631, 331))
         self.tabWidget.setTabPosition(QtWidgets.QTabWidget.TabPosition.East)
         self.tabWidget.setTabShape(QtWidgets.QTabWidget.TabShape.Triangular)
         self.tabWidget.setElideMode(QtCore.Qt.TextElideMode.ElideNone)
@@ -182,7 +182,7 @@ class Ui_MainWindow(object):
         self.TimeTAB = QtWidgets.QWidget()
         self.TimeTAB.setObjectName("TimeTAB")
         self.timeOutputLABEL = QtWidgets.QLabel(parent=self.TimeTAB)
-        self.timeOutputLABEL.setGeometry(QtCore.QRect(20, 20, 311, 211))
+        self.timeOutputLABEL.setGeometry(QtCore.QRect(10, 10, 581, 301))
         self.timeOutputLABEL.setObjectName("timeOutputLABEL")
         self.tabWidget.addTab(self.TimeTAB, "")
 
@@ -190,7 +190,7 @@ class Ui_MainWindow(object):
         self.PrecisionTAB = QtWidgets.QWidget()
         self.PrecisionTAB.setObjectName("PrecisionTAB")
         self.precisionOutputLABEL = QtWidgets.QLabel(parent=self.PrecisionTAB)
-        self.precisionOutputLABEL.setGeometry(QtCore.QRect(20, 20, 311, 211))
+        self.precisionOutputLABEL.setGeometry(QtCore.QRect(10, 10, 581, 301))
         self.precisionOutputLABEL.setObjectName("precisionOutputLABEL")
         self.tabWidget.addTab(self.PrecisionTAB, "")
 
@@ -198,7 +198,7 @@ class Ui_MainWindow(object):
         self.RecallTAB = QtWidgets.QWidget()
         self.RecallTAB.setObjectName("RecallTAB")
         self.recallOutputLABEL = QtWidgets.QLabel(parent=self.RecallTAB)
-        self.recallOutputLABEL.setGeometry(QtCore.QRect(20, 20, 311, 211))
+        self.recallOutputLABEL.setGeometry(QtCore.QRect(10, 10, 581, 301))
         self.recallOutputLABEL.setObjectName("recallOutputLABEL")
         self.tabWidget.addTab(self.RecallTAB, "")
 
@@ -206,9 +206,23 @@ class Ui_MainWindow(object):
         self.F1TAB = QtWidgets.QWidget()
         self.F1TAB.setObjectName("F1TAB")
         self.f1OutputLABEL = QtWidgets.QLabel(parent=self.F1TAB)
-        self.f1OutputLABEL.setGeometry(QtCore.QRect(20, 20, 311, 211))
+        self.f1OutputLABEL.setGeometry(QtCore.QRect(10, 10, 581, 301))
         self.f1OutputLABEL.setObjectName("f1OutputLABEL")
         self.tabWidget.addTab(self.F1TAB, "")
+
+        self.extraTAB1 = QtWidgets.QWidget()
+        self.extraTAB1.setObjectName("extraTAB1")
+        self.extraTAB1OUTPUT = QtWidgets.QLabel(parent=self.extraTAB1)
+        self.extraTAB1OUTPUT.setGeometry(QtCore.QRect(7, 5, 591, 311))
+        self.extraTAB1OUTPUT.setObjectName("extraTAB1OUTPUT")
+        self.tabWidget.addTab(self.extraTAB1, "")
+
+        self.tab_2 = QtWidgets.QWidget()
+        self.tab_2.setObjectName("tab_2")
+        self.extraTAB2OUTPUTS = QtWidgets.QLabel(parent=self.tab_2)
+        self.extraTAB2OUTPUTS.setGeometry(QtCore.QRect(7, 5, 581, 311))
+        self.extraTAB2OUTPUTS.setObjectName("extraTAB2OUTPUTS")
+        self.tabWidget.addTab(self.tab_2, "")
 
 
         self.OutputLABEL = QtWidgets.QLabel(parent=self.graphOutputWIDGET)
@@ -220,22 +234,22 @@ class Ui_MainWindow(object):
         self.OutputLABEL.setFont(font)
         self.OutputLABEL.setObjectName("OutputLABEL")
         self.optimisationCHECK = QtWidgets.QCheckBox(parent=self.graphOutputWIDGET)
-        self.optimisationCHECK.setGeometry(QtCore.QRect(400, 60, 231, 20))
+        self.optimisationCHECK.setGeometry(QtCore.QRect(190, 20, 141, 31))
         self.optimisationCHECK.setObjectName("optimisationCHECK")
         self.TrainingCHECK = QtWidgets.QCheckBox(parent=self.graphOutputWIDGET)
-        self.TrainingCHECK.setGeometry(QtCore.QRect(400, 30, 231, 20))
+        self.TrainingCHECK.setGeometry(QtCore.QRect(30, 20, 151, 31))
         font = QtGui.QFont()
         font.setFamily("Arial")
         self.TrainingCHECK.setFont(font)
         self.TrainingCHECK.setObjectName("TrainingCHECK")
         self.BestCHECK = QtWidgets.QCheckBox(parent=self.graphOutputWIDGET)
-        self.BestCHECK.setGeometry(QtCore.QRect(400, 90, 221, 20))
+        self.BestCHECK.setGeometry(QtCore.QRect(380, 20, 111, 31))
         self.BestCHECK.setObjectName("BestCHECK")
         self.UpdateGraphBUTTON = QtWidgets.QPushButton(parent=self.graphOutputWIDGET)
-        self.UpdateGraphBUTTON.setGeometry(QtCore.QRect(530, 110, 100, 32))
+        self.UpdateGraphBUTTON.setGeometry(QtCore.QRect(520, 20, 100, 32))
         self.UpdateGraphBUTTON.setObjectName("UpdateGraphBUTTON")
         self.statsTEXTBOX = QtWidgets.QTextBrowser(parent=self.graphOutputWIDGET)
-        self.statsTEXTBOX.setGeometry(QtCore.QRect(400, 150, 231, 111))
+        self.statsTEXTBOX.setGeometry(QtCore.QRect(10, 60, 611, 61))
         self.statsTEXTBOX.setObjectName("statsTEXTBOX")
         self.SetUpLABEL = QtWidgets.QLabel(parent=self.centralwidget)
         self.SetUpLABEL.setGeometry(QtCore.QRect(10, 40, 411, 21))
@@ -347,8 +361,9 @@ class Ui_MainWindow(object):
 
     def showPlots(self):
         pixmap = QPixmap('figures/barchartsTrainingTime.png')
-        pixmap = pixmap.scaled(self.timeOutputLABEL.width(), self.timeOutputLABEL.height())
+        pixmap = pixmap.scaled(self.timeOutputLABEL.width(), self.timeOutputLABEL.height(),)
         self.timeOutputLABEL.setPixmap(pixmap)
+        self.timeOutputLABEL.setScaledContents(True)
 
         pixmap = QPixmap('figures/boxplotsRecall.png')
         pixmap = pixmap.scaled(self.recallOutputLABEL.width(), self.recallOutputLABEL.height())

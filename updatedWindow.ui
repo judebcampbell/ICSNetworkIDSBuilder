@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>669</width>
-    <height>600</height>
+    <width>665</width>
+    <height>800</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -265,23 +265,23 @@
    </widget>
    <widget class="QWidget" name="graphOutputWIDGET" native="true">
     <property name="enabled">
-     <bool>false</bool>
+     <bool>true</bool>
     </property>
     <property name="geometry">
      <rect>
       <x>10</x>
       <y>270</y>
       <width>641</width>
-      <height>271</height>
+      <height>481</height>
      </rect>
     </property>
-    <widget class="QTabWidget" name="tabWidget">
+    <widget class="QTabWidget" name="extraTAB2">
      <property name="geometry">
       <rect>
-       <x>-1</x>
-       <y>-1</y>
-       <width>381</width>
-       <height>261</height>
+       <x>10</x>
+       <y>140</y>
+       <width>631</width>
+       <height>331</height>
       </rect>
      </property>
      <property name="tabPosition">
@@ -291,7 +291,7 @@
       <enum>QTabWidget::Triangular</enum>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <property name="elideMode">
       <enum>Qt::ElideNone</enum>
@@ -317,8 +317,8 @@
         <rect>
          <x>20</x>
          <y>20</y>
-         <width>311</width>
-         <height>211</height>
+         <width>571</width>
+         <height>291</height>
         </rect>
        </property>
        <property name="text">
@@ -335,8 +335,8 @@
         <rect>
          <x>20</x>
          <y>20</y>
-         <width>311</width>
-         <height>211</height>
+         <width>571</width>
+         <height>291</height>
         </rect>
        </property>
        <property name="text">
@@ -351,10 +351,10 @@
       <widget class="QLabel" name="recallOutputLABEL">
        <property name="geometry">
         <rect>
-         <x>20</x>
-         <y>20</y>
-         <width>311</width>
-         <height>211</height>
+         <x>10</x>
+         <y>10</y>
+         <width>581</width>
+         <height>301</height>
         </rect>
        </property>
        <property name="text">
@@ -369,10 +369,46 @@
       <widget class="QLabel" name="f1OutputLABEL">
        <property name="geometry">
         <rect>
-         <x>20</x>
-         <y>20</y>
-         <width>311</width>
-         <height>211</height>
+         <x>10</x>
+         <y>10</y>
+         <width>581</width>
+         <height>301</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>TextLabel</string>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QWidget" name="extraTAB1">
+      <attribute name="title">
+       <string>Page</string>
+      </attribute>
+      <widget class="QLabel" name="extraTAB1OUTPUT">
+       <property name="geometry">
+        <rect>
+         <x>7</x>
+         <y>5</y>
+         <width>591</width>
+         <height>311</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>TextLabel</string>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QWidget" name="tab_2">
+      <attribute name="title">
+       <string>Page</string>
+      </attribute>
+      <widget class="QLabel" name="extraTAB2OUTPUTS">
+       <property name="geometry">
+        <rect>
+         <x>7</x>
+         <y>5</y>
+         <width>581</width>
+         <height>311</height>
         </rect>
        </property>
        <property name="text">
@@ -384,7 +420,7 @@
     <widget class="QLabel" name="OutputLABEL">
      <property name="geometry">
       <rect>
-       <x>400</x>
+       <x>0</x>
        <y>0</y>
        <width>221</width>
        <height>21</height>
@@ -404,23 +440,23 @@
     <widget class="QCheckBox" name="optimisationCHECK">
      <property name="geometry">
       <rect>
-       <x>400</x>
-       <y>60</y>
-       <width>231</width>
-       <height>20</height>
+       <x>190</x>
+       <y>20</y>
+       <width>141</width>
+       <height>31</height>
       </rect>
      </property>
      <property name="text">
-      <string>     Best Models Optimisations</string>
+      <string>Optimised Models</string>
      </property>
     </widget>
     <widget class="QCheckBox" name="TrainingCHECK">
      <property name="geometry">
       <rect>
-       <x>400</x>
-       <y>30</y>
-       <width>231</width>
-       <height>20</height>
+       <x>30</x>
+       <y>20</y>
+       <width>151</width>
+       <height>31</height>
       </rect>
      </property>
      <property name="font">
@@ -429,27 +465,27 @@
       </font>
      </property>
      <property name="text">
-      <string>     Initial Training</string>
+      <string>Initial Training</string>
      </property>
     </widget>
     <widget class="QCheckBox" name="BestCHECK">
      <property name="geometry">
       <rect>
-       <x>400</x>
-       <y>90</y>
-       <width>221</width>
-       <height>20</height>
+       <x>380</x>
+       <y>20</y>
+       <width>111</width>
+       <height>31</height>
       </rect>
      </property>
      <property name="text">
-      <string>     Best Model</string>
+      <string>Best Model</string>
      </property>
     </widget>
     <widget class="QPushButton" name="UpdateGraphBUTTON">
      <property name="geometry">
       <rect>
-       <x>530</x>
-       <y>110</y>
+       <x>520</x>
+       <y>20</y>
        <width>100</width>
        <height>32</height>
       </rect>
@@ -461,10 +497,10 @@
     <widget class="QTextBrowser" name="statsTEXTBOX">
      <property name="geometry">
       <rect>
-       <x>400</x>
-       <y>150</y>
-       <width>231</width>
-       <height>111</height>
+       <x>10</x>
+       <y>60</y>
+       <width>611</width>
+       <height>61</height>
       </rect>
      </property>
     </widget>
@@ -541,8 +577,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>669</width>
-     <height>24</height>
+     <width>665</width>
+     <height>22</height>
     </rect>
    </property>
   </widget>

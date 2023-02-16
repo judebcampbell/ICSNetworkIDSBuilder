@@ -127,3 +127,12 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Ignore the reference.py file for copying .ui changes to .py
+reference.py
+
+# Ignore the best_models folder
+best_models/
+
+# Ignore figures
+figures/
