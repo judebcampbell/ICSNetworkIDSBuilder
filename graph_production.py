@@ -10,6 +10,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+import matplotlib.colors as mcolors
+
 def class_balance_binary(labels):
 	normal = 0
 	abnormal = 0
@@ -83,17 +85,46 @@ def time_boxplot(results, model_name):
 	plt.savefig("figures/" + "boxplotsTimes")
 	plt.show()
 
-def balancedAccuracy_boxplot(results, model_name):
+def recall_boxplot(results, model_name):
 	trainingTimes = []
 	fitTimes = []
 	for i in range(len(results)):
-		trainingTimes.append(results[i]['test_precision'])
+		trainingTimes.append(results[i]['test_recall'])
 
 	fig, axs = plt.subplots(1)
-	fig.suptitle('Training Time and scoring time for each CV')
+	fig.suptitle('Recall for each model')
 	axs.boxplot(trainingTimes,patch_artist=True,boxprops = dict(linestyle='-', linewidth=1, color='tab:pink', facecolor= 'tab:pink'), whiskerprops={"color": 'k', "linewidth": 1.5}, capprops={"color": 'k',  "linewidth": 1.5},  medianprops={"color": "k", "linewidth": 1})
 	#axs[1].boxplot(fitTimes, patch_artist=True,boxprops = dict(linestyle='-', linewidth=1, color='tab:pink', facecolor= 'tab:pink'), whiskerprops={"color": 'k', "linewidth": 1.5}, capprops={"color": 'k',  "linewidth": 1.5},  medianprops={"color": "k", "linewidth": 1})
 	axs.set_xticklabels(model_name)
 	axs.set_xticks([])
 	#axs[1].set_xticklabels(model_name)
-	plt.savefig("figures/" + "boxplotsBA")
+	plt.savefig("figures/" + "boxplotsRecall")
+
+def trainTestBarchart(results, model_name):
+	colours = ['deeppink', 'darkorchid', 'rebeccapurple', 'royalblue', 'slategray']
+	N = len(results)
+	training = []
+	test = []
+	width = 0.25
+
+	ind = np.arange(N-1)
+	for i in range(N):
+		training.append(results[i]['fit_time'])
+		test.append(results[i]['score_time'])
+	bar1 = plt.bar(ind, training[0], width, color = colours[0])
+	bar2 = plt.bar(ind+width, training[1],width,  color = colours[1])
+	bar3 = plt.bar(ind+(width*2), training[2],width, color = colours[2])
+	bar4 = plt.bar(ind+(width*3), training[3],width, color =  colours[3])
+	bar5 = plt.bar(ind+(width*4), training[4],width, color = colours[4])
+
+	plt.xlabel("Fold")
+	plt.ylabel("time")
+	plt.title("Model training time across folds")
+
+	plt.xticks(ind+(width*2),[1, 2, 3, 4, 5] )
+	plt.legend( (bar1, bar2, bar3, bar4, bar5), model_name )
+	plt.savefig("figures/" + "barchartsTrainingTime")
+
+
+
+  

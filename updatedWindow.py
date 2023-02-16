@@ -340,13 +340,19 @@ class Ui_MainWindow(object):
     
         if self.trainFileFound == True and self.targetFileFound == True:
             self.StartBUTTON.setEnabled(True)
+        else:
+            self.StartBUTTON.setEnabled(False)
 
         return
 
     def showPlots(self):
-        pixmap = QPixmap('figures/boxplotsTimes.png')
+        pixmap = QPixmap('figures/barchartsTrainingTime.png')
         pixmap = pixmap.scaled(self.timeOutputLABEL.width(), self.timeOutputLABEL.height())
         self.timeOutputLABEL.setPixmap(pixmap)
+
+        pixmap = QPixmap('figures/boxplotsRecall.png')
+        pixmap = pixmap.scaled(self.recallOutputLABEL.width(), self.recallOutputLABEL.height())
+        self.recallOutputLABEL.setPixmap(pixmap)
 
     def handleStory(self):
         if self.PreprocessingCHECK.isChecked():
