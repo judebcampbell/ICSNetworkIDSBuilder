@@ -194,6 +194,8 @@ def timestamps(file, labels, frequency=30):
 
 		#Collect relevant information from the packets in current timestamp
 		while currentVectorTime < frequency:
+
+			# Need to add handling of ARP packets 
 			if 'IP' not in file[counter] or 'TCP' not in file[counter]:
 				counter += 1
 				continue
