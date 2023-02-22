@@ -210,12 +210,12 @@ class Ui_MainWindow(object):
         self.f1OutputLABEL.setObjectName("f1OutputLABEL")
         self.tabWidget.addTab(self.F1TAB, "")
 
-        self.extraTAB1 = QtWidgets.QWidget()
-        self.extraTAB1.setObjectName("extraTAB1")
-        self.extraTAB1OUTPUT = QtWidgets.QLabel(parent=self.extraTAB1)
-        self.extraTAB1OUTPUT.setGeometry(QtCore.QRect(7, 5, 591, 311))
-        self.extraTAB1OUTPUT.setObjectName("extraTAB1OUTPUT")
-        self.tabWidget.addTab(self.extraTAB1, "")
+        self.evalTimeTAB = QtWidgets.QWidget()
+        self.evalTimeTAB.setObjectName("evalTimeTAB")
+        self.evalTimeTABOutputLABEL = QtWidgets.QLabel(parent=self.evalTimeTAB)
+        self.evalTimeTABOutputLABEL.setGeometry(QtCore.QRect(7, 5, 591, 311))
+        self.evalTimeTABOutputLABEL.setObjectName("evalTimeTABOutputLABEL")
+        self.tabWidget.addTab(self.evalTimeTAB, "")
 
         self.tab_2 = QtWidgets.QWidget()
         self.tab_2.setObjectName("tab_2")
@@ -309,6 +309,7 @@ class Ui_MainWindow(object):
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.PrecisionTAB), _translate("MainWindow", "Precision"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.RecallTAB), _translate("MainWindow", "Recall"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.F1TAB), _translate("MainWindow", "F1"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.evalTimeTAB), _translate("MainWindow", "eval time"))
         self.OutputLABEL.setText(_translate("MainWindow", "Show Data For:"))
         self.optimisationCHECK.setText(_translate("MainWindow", "     Best Models Optimisations"))
         self.TrainingCHECK.setText(_translate("MainWindow", "     Initial Training"))
@@ -360,14 +361,14 @@ class Ui_MainWindow(object):
         return
 
     def showPlots(self):
-        pixmap = QPixmap('figures/barchartsTrainingTime.png')
-        pixmap = pixmap.scaled(self.timeOutputLABEL.width(), self.timeOutputLABEL.height(),)
+        pixmap = QPixmap('figures/TrainingTimeSeperateBars.png')
+        pixmap = pixmap.scaled(self.timeOutputLABEL.width(), self.timeOutputLABEL.height(), QtCore.Qt.AspectRatioMode.KeepAspectRatio,)
         self.timeOutputLABEL.setPixmap(pixmap)
         self.timeOutputLABEL.setScaledContents(True)
 
-        pixmap = QPixmap('figures/boxplotsRecall.png')
-        pixmap = pixmap.scaled(self.recallOutputLABEL.width(), self.recallOutputLABEL.height())
-        self.recallOutputLABEL.setPixmap(pixmap)
+        pixmap = QPixmap('figures/TrainingEvalTimeStackedBars.png')
+        pixmap = pixmap.scaled(self.evalTimeTABOutputLABEL.width(), self.evalTimeTABOutputLABEL.height(), QtCore.Qt.AspectRatioMode.KeepAspectRatio,)
+        self.evalTimeTABOutputLABEL.setPixmap(pixmap)
 
     def handleStory(self):
         if self.PreprocessingCHECK.isChecked():

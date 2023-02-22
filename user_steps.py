@@ -45,8 +45,9 @@ def fullToLive(file, targetFile):
 	final_name = final_name[0]
 	fm.saveBestModel(final_model, final_name, nameFile=False)
 
-	gp.recall_boxplot(results, model_names)
-	gp.trainTestBarchart(results, model_names)
+	gp.generatePlots(results, model_names, "Training")
+	gp.generatePlots(tuned_results, tuned_model_names, "Optimised")
+
 	return(model_names, results, tuned_model_names, tuned_results)
 
 
