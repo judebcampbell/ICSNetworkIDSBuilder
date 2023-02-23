@@ -1,0 +1,7 @@
+{
+	"GaussianNB__var_smoothing":[
+	   0,
+	   0.001,
+	   0.01
+	]
+ }

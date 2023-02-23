@@ -8,7 +8,7 @@
 
 from PyQt6 import QtCore, QtGui, QtWidgets
 from PyQt6.QtGui import QPixmap
-
+from PIL import Image, ImageQt
 import matplotlib
 matplotlib.use('QT5Agg')
 
@@ -169,7 +169,7 @@ class Ui_MainWindow(object):
 
         # TAB WIDGET for different graphs based on metrics 
         self.tabWidget = QtWidgets.QTabWidget(parent=self.graphOutputWIDGET)
-        self.tabWidget.setGeometry(QtCore.QRect(10, 140, 631, 331))
+        self.tabWidget.setGeometry(QtCore.QRect(10, 60, 631, 421))
         self.tabWidget.setTabPosition(QtWidgets.QTabWidget.TabPosition.East)
         self.tabWidget.setTabShape(QtWidgets.QTabWidget.TabShape.Triangular)
         self.tabWidget.setElideMode(QtCore.Qt.TextElideMode.ElideNone)
@@ -181,8 +181,11 @@ class Ui_MainWindow(object):
 
         self.TimeTAB = QtWidgets.QWidget()
         self.TimeTAB.setObjectName("TimeTAB")
+
+        self.scene = QtWidgets.QGraphicsScene()
+
         self.timeOutputLABEL = QtWidgets.QLabel(parent=self.TimeTAB)
-        self.timeOutputLABEL.setGeometry(QtCore.QRect(10, 10, 581, 301))
+        self.timeOutputLABEL.setGeometry(QtCore.QRect(10, 10, 581, 411))
         self.timeOutputLABEL.setObjectName("timeOutputLABEL")
         self.tabWidget.addTab(self.TimeTAB, "")
 
@@ -190,7 +193,7 @@ class Ui_MainWindow(object):
         self.PrecisionTAB = QtWidgets.QWidget()
         self.PrecisionTAB.setObjectName("PrecisionTAB")
         self.precisionOutputLABEL = QtWidgets.QLabel(parent=self.PrecisionTAB)
-        self.precisionOutputLABEL.setGeometry(QtCore.QRect(10, 10, 581, 301))
+        self.precisionOutputLABEL.setGeometry(QtCore.QRect(10, 10, 581, 411))
         self.precisionOutputLABEL.setObjectName("precisionOutputLABEL")
         self.tabWidget.addTab(self.PrecisionTAB, "")
 
@@ -198,7 +201,7 @@ class Ui_MainWindow(object):
         self.RecallTAB = QtWidgets.QWidget()
         self.RecallTAB.setObjectName("RecallTAB")
         self.recallOutputLABEL = QtWidgets.QLabel(parent=self.RecallTAB)
-        self.recallOutputLABEL.setGeometry(QtCore.QRect(10, 10, 581, 301))
+        self.recallOutputLABEL.setGeometry(QtCore.QRect(10, 10, 581, 411))
         self.recallOutputLABEL.setObjectName("recallOutputLABEL")
         self.tabWidget.addTab(self.RecallTAB, "")
 
@@ -206,23 +209,23 @@ class Ui_MainWindow(object):
         self.F1TAB = QtWidgets.QWidget()
         self.F1TAB.setObjectName("F1TAB")
         self.f1OutputLABEL = QtWidgets.QLabel(parent=self.F1TAB)
-        self.f1OutputLABEL.setGeometry(QtCore.QRect(10, 10, 581, 301))
+        self.f1OutputLABEL.setGeometry(QtCore.QRect(10, 10, 581, 411))
         self.f1OutputLABEL.setObjectName("f1OutputLABEL")
         self.tabWidget.addTab(self.F1TAB, "")
 
         self.evalTimeTAB = QtWidgets.QWidget()
         self.evalTimeTAB.setObjectName("evalTimeTAB")
         self.evalTimeTABOutputLABEL = QtWidgets.QLabel(parent=self.evalTimeTAB)
-        self.evalTimeTABOutputLABEL.setGeometry(QtCore.QRect(7, 5, 591, 311))
+        self.evalTimeTABOutputLABEL.setGeometry(QtCore.QRect(7, 5, 591, 411))
         self.evalTimeTABOutputLABEL.setObjectName("evalTimeTABOutputLABEL")
         self.tabWidget.addTab(self.evalTimeTAB, "")
 
-        self.tab_2 = QtWidgets.QWidget()
-        self.tab_2.setObjectName("tab_2")
-        self.extraTAB2OUTPUTS = QtWidgets.QLabel(parent=self.tab_2)
-        self.extraTAB2OUTPUTS.setGeometry(QtCore.QRect(7, 5, 581, 311))
-        self.extraTAB2OUTPUTS.setObjectName("extraTAB2OUTPUTS")
-        self.tabWidget.addTab(self.tab_2, "")
+        self.balAccTAB = QtWidgets.QWidget()
+        self.balAccTAB.setObjectName("balAccTAB")
+        self.balAccTabOutputLABEL = QtWidgets.QLabel(parent=self.balAccTAB)
+        self.balAccTabOutputLABEL.setGeometry(QtCore.QRect(7, 5, 581, 411))
+        self.balAccTabOutputLABEL.setObjectName("balAccTabOutputLABEL")
+        self.tabWidget.addTab(self.balAccTAB, "")
 
 
         self.OutputLABEL = QtWidgets.QLabel(parent=self.graphOutputWIDGET)
@@ -234,7 +237,7 @@ class Ui_MainWindow(object):
         self.OutputLABEL.setFont(font)
         self.OutputLABEL.setObjectName("OutputLABEL")
         self.optimisationCHECK = QtWidgets.QCheckBox(parent=self.graphOutputWIDGET)
-        self.optimisationCHECK.setGeometry(QtCore.QRect(190, 20, 141, 31))
+        self.optimisationCHECK.setGeometry(QtCore.QRect(160, 20, 220, 31))
         self.optimisationCHECK.setObjectName("optimisationCHECK")
         self.TrainingCHECK = QtWidgets.QCheckBox(parent=self.graphOutputWIDGET)
         self.TrainingCHECK.setGeometry(QtCore.QRect(30, 20, 151, 31))
@@ -248,9 +251,8 @@ class Ui_MainWindow(object):
         self.UpdateGraphBUTTON = QtWidgets.QPushButton(parent=self.graphOutputWIDGET)
         self.UpdateGraphBUTTON.setGeometry(QtCore.QRect(520, 20, 100, 32))
         self.UpdateGraphBUTTON.setObjectName("UpdateGraphBUTTON")
-        self.statsTEXTBOX = QtWidgets.QTextBrowser(parent=self.graphOutputWIDGET)
-        self.statsTEXTBOX.setGeometry(QtCore.QRect(10, 60, 611, 61))
-        self.statsTEXTBOX.setObjectName("statsTEXTBOX")
+        self.UpdateGraphBUTTON.clicked.connect(self.updateOutput)
+
         self.SetUpLABEL = QtWidgets.QLabel(parent=self.centralwidget)
         self.SetUpLABEL.setGeometry(QtCore.QRect(10, 40, 411, 21))
         font = QtGui.QFont()
@@ -310,6 +312,7 @@ class Ui_MainWindow(object):
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.RecallTAB), _translate("MainWindow", "Recall"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.F1TAB), _translate("MainWindow", "F1"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.evalTimeTAB), _translate("MainWindow", "eval time"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.balAccTAB), _translate("MainWindow", "Balanced Accuracy"))
         self.OutputLABEL.setText(_translate("MainWindow", "Show Data For:"))
         self.optimisationCHECK.setText(_translate("MainWindow", "     Best Models Optimisations"))
         self.TrainingCHECK.setText(_translate("MainWindow", "     Initial Training"))
@@ -361,14 +364,68 @@ class Ui_MainWindow(object):
         return
 
     def showPlots(self):
-        pixmap = QPixmap('figures/TrainingTimeSeperateBars.png')
-        pixmap = pixmap.scaled(self.timeOutputLABEL.width(), self.timeOutputLABEL.height(), QtCore.Qt.AspectRatioMode.KeepAspectRatio,)
-        self.timeOutputLABEL.setPixmap(pixmap)
-        self.timeOutputLABEL.setScaledContents(True)
+        # Eval times
+        image_profile = QtGui.QImage('figures/TrainingEvalTimeStackedBars.png') #QImage object
+        image_profile = image_profile.scaled(self.evalTimeTABOutputLABEL.width(), self.evalTimeTABOutputLABEL.height(), aspectRatioMode=QtCore.Qt.AspectRatioMode.KeepAspectRatio, transformMode=QtCore.Qt.TransformationMode.SmoothTransformation) # To scale image for example and keep its Aspect Ration    
+        self.evalTimeTABOutputLABEL.setPixmap(QtGui.QPixmap.fromImage(image_profile)) 
+        self.evalTimeTABOutputLABEL.setStyleSheet(f"qproperty-alignment: {int(QtCore.Qt.AlignmentFlag.AlignCenter)};")
+        # Training Times
+        image_profile2 = QtGui.QImage('figures/TrainingTimeSeperateBars.png') #QImage object
+        image_profile2 = image_profile2.scaled(self.timeOutputLABEL.width() ,self.timeOutputLABEL.height(), aspectRatioMode=QtCore.Qt.AspectRatioMode.KeepAspectRatio, transformMode=QtCore.Qt.TransformationMode.SmoothTransformation) # To scale image for example and keep its Aspect Ration    
+        self.timeOutputLABEL.setPixmap(QtGui.QPixmap.fromImage(image_profile2)) 
+        self.timeOutputLABEL.setStyleSheet(f"qproperty-alignment: {int(QtCore.Qt.AlignmentFlag.AlignCenter)};")
+        # Recall
+        image_profile3 = QtGui.QImage('figures/TrainingRecallLineGraph.png') #QImage object
+        image_profile3 = image_profile3.scaled(self.recallOutputLABEL.width() ,self.recallOutputLABEL.height(), aspectRatioMode=QtCore.Qt.AspectRatioMode.KeepAspectRatio, transformMode=QtCore.Qt.TransformationMode.SmoothTransformation) # To scale image for example and keep its Aspect Ration    
+        self.recallOutputLABEL.setPixmap(QtGui.QPixmap.fromImage(image_profile3)) 
+        self.recallOutputLABEL.setStyleSheet(f"qproperty-alignment: {int(QtCore.Qt.AlignmentFlag.AlignCenter)};")
 
-        pixmap = QPixmap('figures/TrainingEvalTimeStackedBars.png')
-        pixmap = pixmap.scaled(self.evalTimeTABOutputLABEL.width(), self.evalTimeTABOutputLABEL.height(), QtCore.Qt.AspectRatioMode.KeepAspectRatio,)
-        self.evalTimeTABOutputLABEL.setPixmap(pixmap)
+        image_profile4 = QtGui.QImage('figures/TrainingPrecisionBoxPlots.png') #QImage object
+        image_profile4 = image_profile4.scaled(self.precisionOutputLABEL.width() ,self.precisionOutputLABEL.height(), aspectRatioMode=QtCore.Qt.AspectRatioMode.KeepAspectRatio, transformMode=QtCore.Qt.TransformationMode.SmoothTransformation) # To scale image for example and keep its Aspect Ration    
+        self.precisionOutputLABEL.setPixmap(QtGui.QPixmap.fromImage(image_profile4)) 
+        self.precisionOutputLABEL.setStyleSheet(f"qproperty-alignment: {int(QtCore.Qt.AlignmentFlag.AlignCenter)};")
+
+        image_profile5 = QtGui.QImage('figures/Trainingf1BoxPlots.png') #QImage object
+        image_profile5 = image_profile5.scaled(self.f1OutputLABEL.width() ,self.f1OutputLABEL.height(), aspectRatioMode=QtCore.Qt.AspectRatioMode.KeepAspectRatio, transformMode=QtCore.Qt.TransformationMode.SmoothTransformation) # To scale image for example and keep its Aspect Ration    
+        self.f1OutputLABEL.setPixmap(QtGui.QPixmap.fromImage(image_profile5)) 
+        self.f1OutputLABEL.setStyleSheet(f"qproperty-alignment: {int(QtCore.Qt.AlignmentFlag.AlignCenter)};")
+
+        image_profile6 = QtGui.QImage('figures/TrainingBalancedAccuracyBoxPlots.png') #QImage object
+        image_profile6 = image_profile6.scaled(self.balAccTabOutputLABEL.width() ,self.balAccTabOutputLABEL.height(), aspectRatioMode=QtCore.Qt.AspectRatioMode.KeepAspectRatio, transformMode=QtCore.Qt.TransformationMode.SmoothTransformation) # To scale image for example and keep its Aspect Ration    
+        self.balAccTabOutputLABEL.setPixmap(QtGui.QPixmap.fromImage(image_profile6)) 
+        self.balAccTabOutputLABEL.setStyleSheet(f"qproperty-alignment: {int(QtCore.Qt.AlignmentFlag.AlignCenter)};")
+
+    def OptimisationPlots(self):
+        # Eval times
+        image_profile = QtGui.QImage('figures/OptimisedEvalTimeStackedBars.png') #QImage object
+        image_profile = image_profile.scaled(self.evalTimeTABOutputLABEL.width(), self.evalTimeTABOutputLABEL.height(), aspectRatioMode=QtCore.Qt.AspectRatioMode.KeepAspectRatio, transformMode=QtCore.Qt.TransformationMode.SmoothTransformation) # To scale image for example and keep its Aspect Ration    
+        self.evalTimeTABOutputLABEL.setPixmap(QtGui.QPixmap.fromImage(image_profile)) 
+        self.evalTimeTABOutputLABEL.setStyleSheet(f"qproperty-alignment: {int(QtCore.Qt.AlignmentFlag.AlignCenter)};")
+        # Training Times
+        image_profile2 = QtGui.QImage('figures/OptimisedTimeSeperateBars.png') #QImage object
+        image_profile2 = image_profile2.scaled(self.timeOutputLABEL.width() ,self.timeOutputLABEL.height(), aspectRatioMode=QtCore.Qt.AspectRatioMode.KeepAspectRatio, transformMode=QtCore.Qt.TransformationMode.SmoothTransformation) # To scale image for example and keep its Aspect Ration    
+        self.timeOutputLABEL.setPixmap(QtGui.QPixmap.fromImage(image_profile2)) 
+        self.timeOutputLABEL.setStyleSheet(f"qproperty-alignment: {int(QtCore.Qt.AlignmentFlag.AlignCenter)};")
+        # Recall
+        image_profile3 = QtGui.QImage('figures/OptimisedRecallLineGraph.png') #QImage object
+        image_profile3 = image_profile3.scaled(self.recallOutputLABEL.width() ,self.recallOutputLABEL.height(), aspectRatioMode=QtCore.Qt.AspectRatioMode.KeepAspectRatio, transformMode=QtCore.Qt.TransformationMode.SmoothTransformation) # To scale image for example and keep its Aspect Ration    
+        self.recallOutputLABEL.setPixmap(QtGui.QPixmap.fromImage(image_profile3)) 
+        self.recallOutputLABEL.setStyleSheet(f"qproperty-alignment: {int(QtCore.Qt.AlignmentFlag.AlignCenter)};")
+
+        image_profile4 = QtGui.QImage('figures/OptimisedPrecisionBoxPlots.png') #QImage object
+        image_profile4 = image_profile4.scaled(self.precisionOutputLABEL.width() ,self.precisionOutputLABEL.height(), aspectRatioMode=QtCore.Qt.AspectRatioMode.KeepAspectRatio, transformMode=QtCore.Qt.TransformationMode.SmoothTransformation) # To scale image for example and keep its Aspect Ration    
+        self.precisionOutputLABEL.setPixmap(QtGui.QPixmap.fromImage(image_profile4)) 
+        self.precisionOutputLABEL.setStyleSheet(f"qproperty-alignment: {int(QtCore.Qt.AlignmentFlag.AlignCenter)};")
+
+        image_profile5 = QtGui.QImage('figures/Optimisedf1BoxPlots.png') #QImage object
+        image_profile5 = image_profile5.scaled(self.f1OutputLABEL.width() ,self.f1OutputLABEL.height(), aspectRatioMode=QtCore.Qt.AspectRatioMode.KeepAspectRatio, transformMode=QtCore.Qt.TransformationMode.SmoothTransformation) # To scale image for example and keep its Aspect Ration    
+        self.f1OutputLABEL.setPixmap(QtGui.QPixmap.fromImage(image_profile5)) 
+        self.f1OutputLABEL.setStyleSheet(f"qproperty-alignment: {int(QtCore.Qt.AlignmentFlag.AlignCenter)};")
+
+        image_profile6 = QtGui.QImage('figures/OptimisedBalancedAccuracyBoxPlots.png') #QImage object
+        image_profile6 = image_profile6.scaled(self.balAccTabOutputLABEL.width() ,self.balAccTabOutputLABEL.height(), aspectRatioMode=QtCore.Qt.AspectRatioMode.KeepAspectRatio, transformMode=QtCore.Qt.TransformationMode.SmoothTransformation) # To scale image for example and keep its Aspect Ration    
+        self.balAccTabOutputLABEL.setPixmap(QtGui.QPixmap.fromImage(image_profile6)) 
+        self.balAccTabOutputLABEL.setStyleSheet(f"qproperty-alignment: {int(QtCore.Qt.AlignmentFlag.AlignCenter)};")
 
     def handleStory(self):
         if self.PreprocessingCHECK.isChecked():
@@ -382,6 +439,12 @@ class Ui_MainWindow(object):
         # Enable the output window
         self.graphOutputWIDGET.setEnabled(True)
         self.showPlots()
+    
+    def updateOutput(self):
+        if self.optimisationCHECK.isChecked():
+            self.OptimisationPlots()
+        if self.TrainingCHECK.isChecked():
+            self.showPlots()
         
     
    

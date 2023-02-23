@@ -31,7 +31,7 @@ Function for finding best model including data processing
 def fullToLive(file, targetFile):
 	openedFile = rdpcap(file)
 	labels = fm.toList(targetFile) # generate target list
-	training, targets = dp.timestamps(openedFile, labels, 5) # transform training data and targets
+	training, targets = dp.timestamps(openedFile, labels, 1) # transform training data and targets
 
 	print("\n class balance normal to abnormal in the original data")
 	print(gp.class_balance_binary(labels))

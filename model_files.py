@@ -29,7 +29,7 @@ Function to take file name and read contents into list
 '''
 def toList(filename):
 	score = []
-	with open(filename, "r") as f:
-		for line in f:
+	with open(filename, "r") as fil:
+		for line in fil:
 			score.append(int(line.strip()))
 	return(score)

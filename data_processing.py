@@ -155,7 +155,7 @@ Generates a feature vector at a frequency Calculating 17 features:
 		Average Interarrival Time. 				# of unique TCP Flags
 Output = pandad dataframe + targets as a list
 '''
-def timestamps(file, labels, frequency=30):
+def timestamps(file, labels, frequency=20):
 	rows = []
 	# total time of the pcap and total number of packets transmitted
 	total_time = file[len(file)-1].time - file[0].time

@@ -27,9 +27,9 @@ Can expand selection;
 '''
 def generatePipeline():
 	pipelines = []
+	pipelines.append(('Gaussian', (Pipeline([('GaussianNB', GaussianNB())]))))
 	pipelines.append(('RandomForest', (Pipeline([('RandomForest', RandomForestClassifier())]))))
 	pipelines.append(('SGDC', (Pipeline([('SGDC', SGDClassifier())]))))
-	pipelines.append(('Gaussian', (Pipeline([('GaussianNB', GaussianNB())]))))
 	pipelines.append(('DecisionTree', (Pipeline([('DecisionTree', DecisionTreeClassifier())]))))
 	pipelines.append(('KNN', (Pipeline([('KNN', KNeighborsClassifier())]))))
 	pipelines.append(('SVC', (Pipeline([('SVC', SVC())]))))
@@ -82,12 +82,20 @@ def hyperparameterTuning(model_names, pipelines, X, Y, k=5):
 	tuned_models = []
 
 	for pipe, model in pipelines:
+		print(pipe)
+		print(model)
 		if pipe in model_names:
+			print('Model for tuning')
 			print('\n\nTuning ' + str(pipe))
 			filecomposed = 'model_parameters/' + str(pipe)  + '.json'
+			print(filecomposed + '\n\n')
 			if os.path.isfile(filecomposed):
 				f = open(filecomposed)
+				print('opened file')
 				params = json.load(f)
+				print('loaded parameters')
+				f.close()
+				print(params)
 
 			clf = RandomizedSearchCV(estimator=model, param_distributions=params, cv=k)
 			search = clf.fit(X, Y)

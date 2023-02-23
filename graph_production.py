@@ -71,6 +71,59 @@ def evalTimeBarChart(eval_time, model_names, name):
 	saveTitle = 'figures/' + str(name) + "EvalTimeStackedBars.png"
 	plt.savefig(saveTitle)
 
+def lineGraphPlot(results, names, type, measure):
+	ordered = []
+
+	for i in range(len(results[0])):
+		row = []
+		for j in range(len(results)):
+			row.append(results[j][i])
+		ordered.append(row)
+
+	columns = []
+	for i in range(len(names)):
+		columns.append(names[i])
+
+	df =  pd.DataFrame(ordered, columns=columns)
+
+	df.plot(colormap='Set3')
+	#plt.plot(df, colormap='Tab3')
+	plt.title(measure + ' across ' + type + ' splits')
+	plt.ylabel(measure)
+	plt.xlabel('splits')
+
+	saveTitle = 'figures/' + str(type) + measure + 'LineGraph.png'
+	plt.savefig(saveTitle)
+
+def boxPlots(results, names, type='Training', measure='Precision'):
+	ordered = []
+
+	for i in range(len(results[0])):
+		row = []
+		for j in range(len(results)):
+			row.append(results[j][i])
+		ordered.append(row)
+
+	columns = []
+	for i in range(len(names)):
+		columns.append(names[i])
+
+	df =  pd.DataFrame(ordered, columns=columns)
+
+	boxprops = dict(linestyle='-', linewidth=1, color='#F5CFE4', facecolor= '#F5CFE4')
+	whiskerprops = {"color": '#B484B9', "linewidth": 2, "linestyle": '--'}
+	capprops={"color": 'k',  "linewidth": 1.5}
+	medianprops = {"color": "#B484B9", "linewidth": 3}
+	meanprops = dict(marker='D', markeredgecolor='black',  markerfacecolor='#9DD1C7')
+
+	fig, axs = plt.subplots(1)
+	plt.title(measure + " across training splits")
+	axs.boxplot(df,patch_artist=True,boxprops = boxprops, whiskerprops=whiskerprops, capprops=capprops,  medianprops=medianprops, meanprops=meanprops, showmeans=True)
+	axs.set_xticklabels(names, rotation=45)
+	
+	saveTitle = 'figures/' + str(type) + measure + "BoxPlots.png"
+	plt.savefig(saveTitle)
+
 def generatePlots(results, names, type='Training'):
 	fits = []
 	eval_time = []
@@ -89,3 +142,9 @@ def generatePlots(results, names, type='Training'):
 	
 	seperatedBarChart(fits, names, type)
 	evalTimeBarChart(eval_time, names, type)
+	lineGraphPlot(recall, names, type, measure='Recall')
+	boxPlots(bal_acc, names, type, measure='BalancedAccuracy')
+	boxPlots(f1, names, type, measure='f1')
+	boxPlots(prec, names, type, measure='Precision')
+	boxPlots(recall, names, type, measure='Recall')
+

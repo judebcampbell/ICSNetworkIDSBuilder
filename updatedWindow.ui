@@ -291,7 +291,7 @@
       <enum>QTabWidget::Triangular</enum>
      </property>
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <property name="elideMode">
       <enum>Qt::ElideNone</enum>
@@ -323,6 +323,16 @@
        </property>
        <property name="text">
         <string>TextLabel</string>
+       </property>
+      </widget>
+      <widget class="QGraphicsView" name="graphicsView">
+       <property name="geometry">
+        <rect>
+         <x>5</x>
+         <y>10</y>
+         <width>601</width>
+         <height>301</height>
+        </rect>
        </property>
       </widget>
      </widget>
@@ -578,7 +588,7 @@
      <x>0</x>
      <y>0</y>
      <width>665</width>
-     <height>22</height>
+     <height>24</height>
     </rect>
    </property>
   </widget>
