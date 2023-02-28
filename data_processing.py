@@ -180,14 +180,14 @@ def timestamps(file, labels, frequency=20):
 
 		# number of bytes transfered
 		bytesTransfered = []
-		packets128, packets128To256, packets256To512, = 0, 0, 0
-		packets512To1024, packets1024To1514, packetsAbove1514 = 0, 0, 0
+		q1, q2, q3 = 0, 0, 0
 		smallest = 12000
 		largest = 0
 
 		# tcp flags and arrvial times
 		tcp_flags = []
 		arrivals = []
+		packet_type = []
 
 		#labels
 		labelQueue =  []
@@ -196,16 +196,25 @@ def timestamps(file, labels, frequency=20):
 		while currentVectorTime < frequency:
 
 			# Need to add handling of ARP packets 
-			if 'IP' not in file[counter] or 'TCP' not in file[counter]:
+			if 'Ethernet' in file[counter]:
+				sources.append(file[counter]['Ethernet'].src)
+				destinations.append(file[counter]['Ethernet'].dst)
+				packetCount += 1
+				arrivals.append(file[counter].time)
+				bytesTransfered.append(len(file[counter]))
+			else:
 				counter += 1
 				continue
 
-			bytesTransfered.append(len(file[counter]))
-			sources.append(file[counter]['IP'].src)
-			destinations.append(file[counter]['IP'].dst)
-			tcp_flags.append(file[counter]['TCP'].flags)
-			arrivals.append(file[counter].time)
-			packetCount += 1
+
+			if file[counter]['IP']:
+				packet_type.append(file[counter]['IP'].proto)
+				if file[counter]['TCP']:
+					tcp_flags.append(file[counter]['TCP'].flags)
+			else:
+				packet_type.append(file[counter]['Ethernet'].type)
+			
+			
 
 			labelQueue.append(labels[label_counter])
 
@@ -229,23 +238,20 @@ def timestamps(file, labels, frequency=20):
 		except:
 			avg_bytes = 0
 			smallest, largest = 0, 0 
+		
+		# Quartiles
+		q1, q2, q3 = np.percentile(bytesTransfered, [25, 50, 75]) 
 
-		packets128 = len(list(x for x in bytesTransfered if x <= 128))
-		packets128To256 = len(list(x for x in bytesTransfered if 128 < x <= 256))
-		packets256To512 = len(list(x for x in bytesTransfered if 256 < x <= 512))
-		packets512To1024 = len(list(x for x in bytesTransfered if 512 < x <= 1024))
-		packets1024To1514 = len(list(x for x in bytesTransfered if 1023 < x <= 1514))
-		packetsAbove1514 = len(list(x for x in bytesTransfered if 1514 < x))
-
-		#No of unique sources and destinations
+		# No of unique sources and destinations
 		noSources = len(set(sources))
 		noDestinations = len(set(sources))
-		#No of unique Ips either SRC or DST
+		# No of unique Ips either SRC or DST
 		uniqueIps = sources + destinations
 		uniqueIps = len(set(uniqueIps))
 
-		#No of unqiue TCP Flags
+		# No of unqiue TCP Flags and packet types
 		NoTCP = len(set(tcp_flags))
+		noProtcols = len(set(packet_type))
 
 		# Average interarrival Time
 		try:
@@ -254,9 +260,9 @@ def timestamps(file, labels, frequency=20):
 			avgInterArrival = 0
 
 		#Create Vector
-		row = [totalBytes, avg_bytes, smallest, largest, packets128, packets128To256, 
-			  packets256To512, packets512To1024, packets1024To1514, packetsAbove1514, 
-			  noSources, noDestinations, uniqueIps, NoTCP, packetCount, avgInterArrival
+		row = [totalBytes, avg_bytes, smallest, largest, q1, q2, q3, 
+			  noSources, noDestinations, uniqueIps, NoTCP, noProtcols, 
+				packetCount, avgInterArrival
 			]
 
 		#add target class for current time
@@ -273,10 +279,8 @@ def timestamps(file, labels, frequency=20):
 
 	#Change the list of vectors into a Pandas dataframe
 	features = pd.DataFrame(rows, columns=["Total Bytes", "Average Packet Size", "Smallest Packet", 
-									"Largest Packets", "packets < 128 ", "packets 128 to 256", 
-									"packet 256 to 512", "packets 512 to 1024", "packets 1024 to 1514", 
-									"packets > 1514", "No Sources", "No of Destinations", "No IPs", 
-									"No TCP Flags", "Packet Count", "Average Inter Arrival Time"]
+									"Largest Packets", '25%', '50%', '75%', "No Sources", "No of Destinations", 
+									"No IPs", "No TCP Flags", "No Protocols", "Packet Count", "Average Inter Arrival Time"]
 							)
 
 	return(features, targets)
