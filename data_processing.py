@@ -161,6 +161,7 @@ def timestamps(file, labels, frequency=20):
 	total_time = file[len(file)-1].time - file[0].time
 	total_packets = len(file) - 1
 
+	print(total_packets)
 	counter = 0
 	currentVectorTime = 0
 
@@ -203,31 +204,33 @@ def timestamps(file, labels, frequency=20):
 				arrivals.append(file[counter].time)
 				bytesTransfered.append(len(file[counter]))
 			else:
+				labelQueue.append(labels[counter])
+				#label_counter += 1
 				counter += 1
 				continue
 
 
-			if file[counter]['IP']:
+			if 'IP' in file[counter]:
 				packet_type.append(file[counter]['IP'].proto)
-				if file[counter]['TCP']:
+				if 'TCP' in file[counter]:
 					tcp_flags.append(file[counter]['TCP'].flags)
 			else:
 				packet_type.append(file[counter]['Ethernet'].type)
 			
-			
-
-			labelQueue.append(labels[label_counter])
-
 			if counter == total_packets or counter-1 == total_packets:
 				break
-			
+
+			try:
+				labelQueue.append(labels[counter])
+			except:
+				labelQueue.append(0)
 			counter += 1
-			label_counter += 1
-			if counter % 10000 == 0:
-				print("On packet:" + str(counter))
+			#label_counter += 1
+			#if counter % 10000 == 0:
+			#	print("On packet:" + str(counter))
 				
 			currentVectorTime = arrivals[-1] - start_time
-
+		
 		#Generate Features
 		#total and average bytes 
 		totalBytes = sum(bytesTransfered)
@@ -268,9 +271,8 @@ def timestamps(file, labels, frequency=20):
 		#add target class for current time
 		if 1 in labelQueue:
 			targets.append(1)
-		else: 
+		else:
 			targets.append(0)
-
 			
 		# Add Vector to list
 		rows.append(row)
