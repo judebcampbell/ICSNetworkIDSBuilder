@@ -69,6 +69,9 @@ def l5AttackClassifier(openfilename):
 				print('DOS found')
 				labels.append(1)
 				continue
+			elif pkt['IP'].dst == '192.168.5.22' and pkt["Ethernet"].src == 'f8:32:e4:bc:c0:5f':
+				labels.append(1)
+				continue
 			elif pkt['IP'].src == '192.168.5.104' and pkt['IP'].dst == '192.168.5.22' and pkt['IP'].proto == 'S7Comm':
 				print('found S7')
 				labels.append(1)
@@ -97,8 +100,9 @@ def cleanLabels(openfilename):
 	
 	return(labels)
 
-filename = 'training45m'
-labels = l5AttackClassifier('data/timestamps/training45m.pcapng')
+
+filename = 'training52Minutes'
+labels = l5AttackClassifier('data/timestamps/training52Minutes.pcapng')
 
 classfilename = 'data/timestamps/' + filename + 'Class.txt'
 
@@ -107,4 +111,55 @@ print(pg.class_balance_binary(labels))
 with open(classfilename, 'w') as f:
 	for l in labels:
 		f.write(str(l)+ "\n")
-	
+
+with open("data/timestamps/training52MinutesClass.txt") as file:
+    generated = [int(line.strip()) for line in file]
+
+new = []
+
+for i in range(len(generated)):
+	if i < 4940:
+		print(i)
+		new.append(int(0))
+		continue
+	elif 8318 < i < 11609:
+		new.append(int(0))
+		continue
+	elif 25415 < i < 33501:
+		new.append(int(0))
+		continue
+	elif 38441 < i < 48195:
+		new.append(int(0))
+		continue
+	elif 100282 < i < 101850:
+		new.append(int(0))
+		continue
+	elif 103543 < i < 106860:
+		new.append(int(0))
+		continue
+	elif 211503 < i < 214666:
+		new.append(int(0))
+		continue
+	elif 216286 < i < 217931:
+		new.append(int(0))
+		continue
+	elif 219568 < i < 224328:
+		new.append(int(0))
+		continue
+	elif 325427 < i < 328624:
+		new.append(int(0))
+		continue
+	else: 
+		new.append(int(generated[i]))
+
+print('Original Class Imbalance')	
+print(pg.class_balance_binary(generated))
+print('Cleaned Class Imbalance')
+print(pg.class_balance_binary(new))
+
+filename = 'training52MinutesPOLISHED'
+
+classfilename = 'data/timestamps/' + filename + 'Class.txt'
+with open(classfilename, 'w') as f:
+	for l in new:
+		f.write(str(l)+ "\n")

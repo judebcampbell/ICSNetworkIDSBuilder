@@ -148,3 +148,25 @@ def generatePlots(results, names, type='Training'):
 	boxPlots(prec, names, type, measure='Precision')
 	boxPlots(recall, names, type, measure='Recall')
 
+def generatePlotsReduced(results, names, type='Training'):
+	fits = []
+	eval_time = []
+	bal_acc = []
+	f1 = []
+	prec = []
+	recall = []
+
+	for i in range(len(results)):
+		fits.append(results[i]['fit_time'])
+		eval_time.append(results[i]['score_time'])
+		bal_acc.append(results[i]['test_balanced_accuracy'])
+		f1.append(results[i]['test_f1'])
+		prec.append(results[i]['test_precision'])
+		recall.append(results[i]['test_recall'])
+	
+
+	#lineGraphPlot(recall, names, type, measure='Recall')
+	boxPlots(bal_acc, names, type, measure='BalancedAccuracy')
+	boxPlots(f1, names, type, measure='f1')
+	#boxPlots(prec, names, type, measure='Precision')
+
