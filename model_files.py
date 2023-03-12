@@ -24,6 +24,11 @@ def saveBestModel(model, modelName='FinalModel', nameFile = False):
 	pickle.dump(model, open(filename, 'wb'))
 	#print("\nModel Saved as: " + filename)
 
+
+
+def openModel(filename):
+	return(pickle.load(open(filename, 'rb')))
+
 '''
 Function to take file name and read contents into list 
 '''
