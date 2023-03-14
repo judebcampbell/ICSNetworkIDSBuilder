@@ -92,11 +92,14 @@ Generates a feature vector at a frequency Calculating 17 features:
 		Average Interarrival Time. 				# of unique TCP Flags
 Output = pandad dataframe + targets as a list
 '''
-def timestamps(file, labels, size=None):
-	if size == None:
+def timestamps(file, labels=None, size=None):
+	if labels == None and size == None:
+		freq = 10
+	elif size == None:
 		frequency = timestampSize(file, labels)
 	else: 
 		frequency = size
+
 	rows = []
 	# total time of the pcap and total number of packets transmitted
 	total_time = file[len(file)-1].time - file[0].time
@@ -165,14 +168,12 @@ def timestamps(file, labels, size=None):
 			if counter == total_packets or counter-1 == total_packets:
 				break
 
-			try:
-				labelQueue.append(labels[counter])
-			except:
-				labelQueue.append(0)
+			if labels != None:
+				try:
+					labelQueue.append(labels[counter])
+				except:
+					labelQueue.append(0)
 			counter += 1
-			#label_counter += 1
-			#if counter % 10000 == 0:
-			#	print("On packet:" + str(counter))
 				
 			currentVectorTime = arrivals[-1] - start_time
 		
@@ -217,10 +218,11 @@ def timestamps(file, labels, size=None):
 			]
 
 		#add target class for current time
-		if 1 in labelQueue:
-			targets.append(1)
-		else:
-			targets.append(0)
+		if labels != None:
+			if 1 in labelQueue:
+				targets.append(1)
+			else:
+				targets.append(0)
 			
 		# Add Vector to list
 		rows.append(row)
@@ -233,5 +235,8 @@ def timestamps(file, labels, size=None):
 									"unique addresses", "No TCP Flags", "No Protocols", "Packet Count", "Average Inter Arrival Time"]
 							)
 
-	return(features, targets)
+	if labels != None:
+		return(features, targets, frequency)
+	
+	return(features)
 

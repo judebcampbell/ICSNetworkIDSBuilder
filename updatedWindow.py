@@ -40,17 +40,18 @@ class Ui_MainWindow(object):
         self.trainResults = []
         self.oModelNames = []
         self.oResults = []
+        self.size = 0
 
         
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(669, 800)
+        MainWindow.resize(669, 900)
         self.centralwidget = QtWidgets.QWidget(parent=MainWindow)
         self.centralwidget.setObjectName("centralwidget")
 
         # Widget containing Set up information
         self.SetUpWIDGET = QtWidgets.QTabWidget(parent=self.centralwidget)
-        self.SetUpWIDGET.setGeometry(QtCore.QRect(10, 70, 641, 161))
+        self.SetUpWIDGET.setGeometry(QtCore.QRect(10, 70, 641, 801))
         font = QtGui.QFont()
         font.setFamily("Arial")
         self.SetUpWIDGET.setFont(font)
@@ -162,14 +163,14 @@ class Ui_MainWindow(object):
 
 
         # Output WIDGET at the bottom of the SCREEN
-        self.graphOutputWIDGET = QtWidgets.QWidget(parent=self.centralwidget)
+        self.graphOutputWIDGET = QtWidgets.QWidget(parent=self.SelectionTAB)
         self.graphOutputWIDGET.setEnabled(True)
-        self.graphOutputWIDGET.setGeometry(QtCore.QRect(10, 270, 641, 481))
+        self.graphOutputWIDGET.setGeometry(QtCore.QRect(0, 150, 641, 701))
         self.graphOutputWIDGET.setObjectName("graphOutputWIDGET")
 
         # TAB WIDGET for different graphs based on metrics 
         self.tabWidget = QtWidgets.QTabWidget(parent=self.graphOutputWIDGET)
-        self.tabWidget.setGeometry(QtCore.QRect(10, 60, 631, 421))
+        self.tabWidget.setGeometry(QtCore.QRect(10, 100, 631, 601))
         self.tabWidget.setTabPosition(QtWidgets.QTabWidget.TabPosition.East)
         self.tabWidget.setTabShape(QtWidgets.QTabWidget.TabShape.Triangular)
         self.tabWidget.setElideMode(QtCore.Qt.TextElideMode.ElideNone)
@@ -216,42 +217,52 @@ class Ui_MainWindow(object):
         self.evalTimeTAB = QtWidgets.QWidget()
         self.evalTimeTAB.setObjectName("evalTimeTAB")
         self.evalTimeTABOutputLABEL = QtWidgets.QLabel(parent=self.evalTimeTAB)
-        self.evalTimeTABOutputLABEL.setGeometry(QtCore.QRect(7, 5, 591, 411))
+        self.evalTimeTABOutputLABEL.setGeometry(QtCore.QRect(10, 10, 581, 411))
         self.evalTimeTABOutputLABEL.setObjectName("evalTimeTABOutputLABEL")
         self.tabWidget.addTab(self.evalTimeTAB, "")
 
         self.balAccTAB = QtWidgets.QWidget()
         self.balAccTAB.setObjectName("balAccTAB")
         self.balAccTabOutputLABEL = QtWidgets.QLabel(parent=self.balAccTAB)
-        self.balAccTabOutputLABEL.setGeometry(QtCore.QRect(7, 5, 581, 411))
+        self.balAccTabOutputLABEL.setGeometry(QtCore.QRect(10, 10, 581, 411))
         self.balAccTabOutputLABEL.setObjectName("balAccTabOutputLABEL")
         self.tabWidget.addTab(self.balAccTAB, "")
 
 
+        # Label that says output for: 
         self.OutputLABEL = QtWidgets.QLabel(parent=self.graphOutputWIDGET)
-        self.OutputLABEL.setGeometry(QtCore.QRect(400, 0, 221, 21))
+        self.OutputLABEL.setGeometry(QtCore.QRect(10, 0, 221, 21))
         font = QtGui.QFont()
         font.setFamily("Arial")
         font.setPointSize(14)
         font.setBold(True)
         self.OutputLABEL.setFont(font)
         self.OutputLABEL.setObjectName("OutputLABEL")
+        
+        # Check to show Optimisation graphs
         self.optimisationCHECK = QtWidgets.QCheckBox(parent=self.graphOutputWIDGET)
-        self.optimisationCHECK.setGeometry(QtCore.QRect(160, 20, 220, 31))
+        self.optimisationCHECK.setGeometry(QtCore.QRect(150, 20, 200, 31))
         self.optimisationCHECK.setObjectName("optimisationCHECK")
+
         self.TrainingCHECK = QtWidgets.QCheckBox(parent=self.graphOutputWIDGET)
-        self.TrainingCHECK.setGeometry(QtCore.QRect(30, 20, 151, 31))
+        self.TrainingCHECK.setGeometry(QtCore.QRect(10, 20, 151, 31))
         font = QtGui.QFont()
         font.setFamily("Arial")
         self.TrainingCHECK.setFont(font)
         self.TrainingCHECK.setObjectName("TrainingCHECK")
+
         self.BestCHECK = QtWidgets.QCheckBox(parent=self.graphOutputWIDGET)
         self.BestCHECK.setGeometry(QtCore.QRect(380, 20, 111, 31))
         self.BestCHECK.setObjectName("BestCHECK")
+
         self.UpdateGraphBUTTON = QtWidgets.QPushButton(parent=self.graphOutputWIDGET)
         self.UpdateGraphBUTTON.setGeometry(QtCore.QRect(520, 20, 100, 32))
         self.UpdateGraphBUTTON.setObjectName("UpdateGraphBUTTON")
         self.UpdateGraphBUTTON.clicked.connect(self.updateOutput)
+
+        self.OUTPUTstats = QtWidgets.QTextBrowser(parent=self.graphOutputWIDGET)
+        self.OUTPUTstats.setGeometry(QtCore.QRect(10, 50, 611, 51))
+        self.OUTPUTstats.setObjectName("OUTPUTstats")
 
         self.SetUpLABEL = QtWidgets.QLabel(parent=self.centralwidget)
         self.SetUpLABEL.setGeometry(QtCore.QRect(10, 40, 411, 21))
@@ -261,15 +272,17 @@ class Ui_MainWindow(object):
         font.setBold(True)
         self.SetUpLABEL.setFont(font)
         self.SetUpLABEL.setObjectName("SetUpLABEL")
-        self.OutputSectionLABEL = QtWidgets.QLabel(parent=self.centralwidget)
+
+        self.OutputSectionLABEL = QtWidgets.QLabel(parent=self.SelectionTAB)
         self.OutputSectionLABEL.setEnabled(True)
-        self.OutputSectionLABEL.setGeometry(QtCore.QRect(10, 240, 411, 31))
+        self.OutputSectionLABEL.setGeometry(QtCore.QRect(10, 120, 411, 31))
         font = QtGui.QFont()
         font.setFamily("Arial Black")
         font.setPointSize(14)
         font.setBold(True)
         self.OutputSectionLABEL.setFont(font)
         self.OutputSectionLABEL.setObjectName("OutputSectionLABEL")
+
         self.TitleLABEL = QtWidgets.QLabel(parent=self.centralwidget)
         self.TitleLABEL.setGeometry(QtCore.QRect(10, 0, 641, 31))
         font = QtGui.QFont()
@@ -279,6 +292,7 @@ class Ui_MainWindow(object):
         self.TitleLABEL.setFont(font)
         self.TitleLABEL.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.TitleLABEL.setObjectName("TitleLABEL")
+
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(parent=MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 669, 24))
@@ -311,7 +325,7 @@ class Ui_MainWindow(object):
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.PrecisionTAB), _translate("MainWindow", "Precision"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.RecallTAB), _translate("MainWindow", "Recall"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.F1TAB), _translate("MainWindow", "F1"))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.evalTimeTAB), _translate("MainWindow", "eval time"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.evalTimeTAB), _translate("MainWindow", "Eval Time"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.balAccTAB), _translate("MainWindow", "Balanced Accuracy"))
         self.OutputLABEL.setText(_translate("MainWindow", "Show Data For:"))
         self.optimisationCHECK.setText(_translate("MainWindow", "     Best Models Optimisations"))
@@ -364,6 +378,7 @@ class Ui_MainWindow(object):
         return
 
     def showPlots(self):
+        
         # Eval times
         image_profile = QtGui.QImage('figures/TrainingEvalTimeStackedBars.png') #QImage object
         image_profile = image_profile.scaled(self.evalTimeTABOutputLABEL.width(), self.evalTimeTABOutputLABEL.height(), aspectRatioMode=QtCore.Qt.AspectRatioMode.KeepAspectRatio, transformMode=QtCore.Qt.TransformationMode.SmoothTransformation) # To scale image for example and keep its Aspect Ration    
@@ -429,7 +444,7 @@ class Ui_MainWindow(object):
 
     def handleStory(self):
         if self.PreprocessingCHECK.isChecked():
-            self.modelNames, self.trainResults, self.oModelNames, self.oResults = us.fullToLive(self.trainingfile, self.targetfile)
+            self.modelNames, self.trainResults, self.oModelNames, self.oResults, self.size = us.fullToLive(self.trainingfile, self.targetfile)
         else:
             self.modelNames, selt.trainResults, self.oModelNames, self.oResults = us.modelSelectionNoProcessing(self.trainingfile, self.targetfile)
 
@@ -439,6 +454,8 @@ class Ui_MainWindow(object):
         # Enable the output window
         self.graphOutputWIDGET.setEnabled(True)
         self.showPlots()
+        self.setOutputStats()
+        #self.OUTPUTstats.append('The Frequency of the feature sets is every: ' + str(self.size) + ' seconds')
     
     def updateOutput(self):
         if self.optimisationCHECK.isChecked():
@@ -446,7 +463,11 @@ class Ui_MainWindow(object):
         if self.TrainingCHECK.isChecked():
             self.showPlots()
         
-    
+    def setOutputStats(self):
+        text = open('figures/outputText.txt').read()
+        self.OUTPUTstats.setPlainText(text)
+
+
    
 
 

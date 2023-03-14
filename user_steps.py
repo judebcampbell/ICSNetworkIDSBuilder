@@ -32,26 +32,44 @@ from threading import Thread
 Function for finding best model including data processing
 '''
 def fullToLive(file, targetFile):
+	f =  open(('figures/outputText.txt'), "w")
 	openedFile = rdpcap(file)
 	labels = fm.toList(targetFile) # generate target list
-	training, targets = dp.timestamps(openedFile, labels) # transform training data and targets
+	training, targets, freq = dp.timestamps(openedFile, labels) # transform training data and targets
+
+	val = len(training)
+	split = round(0.8 * len(training))
+	trainX = training[:split]
+	trainY = targets[:split]
+	testX = training[split:]
+	testY = targets[split:]
 
 	print("\n class balance normal to abnormal in the original data")
 	print(gp.class_balance_binary(labels))
 	print("\n class balance normal to abnormal in the produced data")
-	print(gp.class_balance_binary(targets))
+	n, a =gp.class_balance_binary(targets)
+	print(n, a)
+
+	f.write("Training data size:   " + str(split) + "\n")
+	f.write("Test data size:   " + str(val - split) + "\n")
+	f.write("Feature vectors calculated every  " + str(freq) + '  seconds' + "\n")
+	f.write("Class imbalance:" + "\n")
+	f.write("	Normal:  " + str(n) + "\n")
+	f.write("	Abnormal:  " + str(a) + "\n")
+
 	
-	model_names, results, pipelines = ms.trainModels(training, targets) #train the initial models
+	model_names, results, pipelines = ms.trainModels(trainX, trainY) #train the initial models
 	best_model_names = ms.evaluateModels(results, model_names, 3) # find the 3 best models
-	tuned_model_names, tuned_results, tuned_models = ms.hyperparameterTuning(best_model_names, pipelines, training, targets)
+	tuned_model_names, tuned_results, tuned_models = ms.hyperparameterTuning(best_model_names, pipelines, trainX, trainY)
 	final_name, final_model = ms.evaluateModels(tuned_results, tuned_model_names, 1, tuned_models)
 	final_name = final_name[0]
 	fm.saveBestModel(final_model, final_name, nameFile=False)
 
 	gp.generatePlots(results, model_names, "Training")
 	gp.generatePlots(tuned_results, tuned_model_names, "Optimised")
+	
 
-	return(model_names, results, tuned_model_names, tuned_results)
+	return(model_names, results, tuned_model_names, tuned_results, freq)
 
 '''
 Function to find best model for data that does not need to be processed in the system
@@ -88,6 +106,7 @@ def detectionFunc(modelFile, timeSize):
 	while True:
 		data = rdpcap(current)
 		data = dp.timestamps(file, labels, timeSize)
+
 		predictions =  model.predict(data)
 
 		for i in range(len(predictions)):
