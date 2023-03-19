@@ -136,3 +136,5 @@ best_models/
 
 # Ignore figures
 figures/
+data/evaluation
+Results/

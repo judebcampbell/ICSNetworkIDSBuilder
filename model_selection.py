@@ -6,6 +6,11 @@ Contains all functions related to training and tuning models
 
 import json
 import os
+import numpy as np 
+import pandas as pd 
+import matplotlib.pyplot as plt
+import seaborn as sns
+
 
 from sklearn.model_selection import KFold
 from sklearn.pipeline import Pipeline
@@ -17,6 +22,7 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.svm import SVC
 from sklearn.model_selection import RandomizedSearchCV
 from sklearn.model_selection import cross_validate
+from sklearn.metrics import confusion_matrix
 
 '''
 Function returns a set of pipelines for training; range of models used.
@@ -32,7 +38,7 @@ def generatePipeline():
 	pipelines.append(('SGDC', (Pipeline([('SGDC', SGDClassifier())]))))
 	pipelines.append(('DecisionTree', (Pipeline([('DecisionTree', DecisionTreeClassifier())]))))
 	pipelines.append(('KNN', (Pipeline([('KNN', KNeighborsClassifier())]))))
-	pipelines.append(('SVC', (Pipeline([('SVC', SVC())]))))
+	pipelines.append(('SVC', (Pipeline([('SVC', SVC(probability=True, max_iter=5000))]))))
 	return(pipelines)
 
 
@@ -52,6 +58,7 @@ def trainModels(X,Y,k=5):
 	model_names = []
 	results = []
 	for pipe, model in pipelines:
+		print(pipe)
 		kfold = KFold(n_splits=k)
 		# https://scikit-learn.org/stable/modules/model_evaluation.html#scoring-parameter
 		crossv_results =  cross_validate(model, X, Y, cv=kfold, scoring=['balanced_accuracy',
@@ -85,10 +92,10 @@ def hyperparameterTuning(model_names, pipelines, X, Y, k=5):
 		print(pipe)
 		print(model)
 		if pipe in model_names:
-			print('Model for tuning')
+			#print('Model for tuning')
 			print('\n\nTuning ' + str(pipe))
 			filecomposed = 'model_parameters/' + str(pipe)  + '.json'
-			print(filecomposed + '\n\n')
+			#print(filecomposed + '\n\n')
 			if os.path.isfile(filecomposed):
 				f = open(filecomposed)
 				print('opened file')
@@ -134,7 +141,7 @@ def evaluateModels(results, modelnames, n=3, models = None):
 	#sort the means and get their index for finding model/model name
 	locations = sorted(range(len(means)), key=lambda i: means[i])[-n:]
 	for l in locations:
-		#print("\n" +  str(modelnames[l]) + " Average F1: " + str(means[l]) + " Standard Deviation: " + str(stds[l]))
+		print("\n" +  str(modelnames[l]) + " Average F1: " + str(means[l]) + " Standard Deviation: " + str(stds[l]))
 		best_models_names.append(modelnames[l])
 
 		if models != None:

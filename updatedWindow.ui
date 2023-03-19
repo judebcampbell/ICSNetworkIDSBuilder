@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>665</width>
-    <height>787</height>
+    <height>900</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,7 +20,7 @@
       <x>10</x>
       <y>70</y>
       <width>641</width>
-      <height>671</height>
+      <height>781</height>
      </rect>
     </property>
     <property name="font">
@@ -288,7 +288,7 @@
         <x>0</x>
         <y>150</y>
         <width>641</width>
-        <height>491</height>
+        <height>611</height>
        </rect>
       </property>
       <widget class="QTabWidget" name="extraTAB2">
@@ -297,8 +297,11 @@
          <x>10</x>
          <y>100</y>
          <width>631</width>
-         <height>391</height>
+         <height>501</height>
         </rect>
+       </property>
+       <property name="focusPolicy">
+        <enum>Qt::WheelFocus</enum>
        </property>
        <property name="tabPosition">
         <enum>QTabWidget::East</enum>
@@ -307,7 +310,7 @@
         <enum>QTabWidget::Triangular</enum>
        </property>
        <property name="currentIndex">
-        <number>1</number>
+        <number>5</number>
        </property>
        <property name="elideMode">
         <enum>Qt::ElideNone</enum>
@@ -362,7 +365,7 @@
            <x>10</x>
            <y>10</y>
            <width>581</width>
-           <height>361</height>
+           <height>481</height>
           </rect>
          </property>
          <property name="text">
@@ -434,7 +437,7 @@
            <x>7</x>
            <y>5</y>
            <width>581</width>
-           <height>311</height>
+           <height>481</height>
           </rect>
          </property>
          <property name="text">
@@ -676,7 +679,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
      <x>0</x>
      <y>0</y>
      <width>665</width>
-     <height>24</height>
+     <height>22</height>
     </rect>
    </property>
   </widget>

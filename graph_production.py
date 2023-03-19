@@ -9,9 +9,15 @@ Contains all functions for:
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+import scikitplot as skplt
 
 import pandas as pd
 import matplotlib.colors as mcolors
+from mycolorpy import colorlist as mcp
+
+
+from sklearn.metrics import confusion_matrix
+from sklearn.metrics import f1_score, precision_score, recall_score, balanced_accuracy_score
 
 def class_balance_binary(labels):
 	normal = 0
@@ -119,7 +125,7 @@ def boxPlots(results, names, type='Training', measure='Precision'):
 	fig, axs = plt.subplots(1)
 	plt.title(measure + " across training splits")
 	axs.boxplot(df,patch_artist=True,boxprops = boxprops, whiskerprops=whiskerprops, capprops=capprops,  medianprops=medianprops, meanprops=meanprops, showmeans=True)
-	axs.set_xticklabels(names, rotation=45)
+	axs.set_xticklabels(names)
 	
 	saveTitle = 'figures/' + str(type) + measure + "BoxPlots.png"
 	plt.savefig(saveTitle)
@@ -141,12 +147,18 @@ def generatePlots(results, names, type='Training'):
 		recall.append(results[i]['test_recall'])
 	
 	seperatedBarChart(fits, names, type)
+	print('Time bar chart \n')
 	evalTimeBarChart(eval_time, names, type)
-	lineGraphPlot(recall, names, type, measure='Recall')
+	print('Eval bar chart')
+	lineGraphPlot(recall, names, type, measure='Recall') 
+	print('Recall Line')
 	boxPlots(bal_acc, names, type, measure='BalancedAccuracy')
+	print('Balanced accuracy')
 	boxPlots(f1, names, type, measure='f1')
+	print('f1 boxplots')
 	boxPlots(prec, names, type, measure='Precision')
-	boxPlots(recall, names, type, measure='Recall')
+	print("precission boxplot")
+	#boxPlots(recall, names, type, measure='Recall')
 
 def generatePlotsReduced(results, names, type='Training'):
 	fits = []
@@ -169,4 +181,92 @@ def generatePlotsReduced(results, names, type='Training'):
 	boxPlots(bal_acc, names, type, measure='BalancedAccuracy')
 	boxPlots(f1, names, type, measure='f1')
 	#boxPlots(prec, names, type, measure='Precision')
+	return
+
+def confusionMatrixFunc(pred, y, type):
+	cm = confusion_matrix(pred, y)
+	print(cm.shape)
+	if cm.shape == (2,2):
+		df_cm = pd.DataFrame(cm, index=['False', 'True'], columns=['False', 'True'])
+	else:
+		index = list(range(1, cm.shape[0]+1))
+		columns = list(range(1, cm.shape[1]+1))
+		df_cm = pd.DataFrame(cm, index=index, columns=columns)
+	plt.figure(figsize=(7,5))
+	sns.heatmap(df_cm, annot=True, cmap='Set3')
+	plt.title("Confusion Matrix for best Model")
+	save = 'figures/BestMATRIX.png'
+	plt.savefig(save)
+
+def ROCCurve(pred, y, type):
+	skplt.metrics.plot_roc_curve(y, pred)
+	plt.title("ROC cuve for final model")
+	save = 'figures/BestROC.png'
+	plt.savefig(save)
+
+def PrecRecallCurve(pred, y, type):
+	skplt.metrics.plot_precision_recall(y, pred)
+	plt.title("ROC cuve for final model")
+	save = 'figures/BestPrecRecallCurve.png'
+	plt.savefig(save)
+
+def trainTestBar(predTr, trainY, pred, y, type):
+	color1=mcp.gen_color(cmap="Set3",n=8)
+	
+	training, tests = [], []
+	metrics = ["Precision", "Recall", "F1", "Balanced Acc"]
+	metricFuncs = [precision_score, recall_score, f1_score, balanced_accuracy_score]
+	if len(set(y)) > 2:
+		for i in range(len(metricFuncs)):
+			if metrics[i] == 'Balanced Acc':
+				training.append(metricFuncs[i](trainY, predTr))
+				tests.append(metricFuncs[i](y, pred))
+			else:
+				training.append(metricFuncs[i](trainY, predTr, average='weighted'))
+				tests.append(metricFuncs[i](y, pred, average='weighted'))
+	else:
+		for i in range(len(metricFuncs)):
+			training.append(metricFuncs[i](trainY, predTr))
+			tests.append(metricFuncs[i](y, pred))
+	
+	bar_width = 0.35
+	x_pos = np.arange(len(training))
+	fig, ax = plt.subplots()
+	bar1 = ax.bar(x_pos, training, bar_width, color=color1[2], label="Training Data")
+	bar2 = ax.bar(x_pos + bar_width, tests, bar_width, color=color1[6], label="Test Data")
+
+	ax.set_xlabel("Metric")
+	ax.set_ylabel("Performance")
+	ax.set_title("Performance of metrics on Training and Test Data")
+	ax.set_xticks(x_pos)
+	ax.set_xticklabels(metrics)
+	ax.legend()
+	fig.tight_layout()
+	save = 'figures/BestMetrics.png'
+	plt.savefig(save)
+
+def generateUnseenData(models, testX, testY, trainX, trainY, type):
+	
+	for model in models:
+
+		pred = model.predict(testX)
+		print('predict test')
+		pred_prob = model.predict_proba(testX)
+		print('predict probability test')
+		predTr = model.predict(trainX)
+		print('predict train')
+		confusionMatrixFunc(pred, testY, type)
+		print('confusion matrix')
+		try:
+			ROCCurve(pred_prob, testY, type)
+			print('roc curve')
+		except:
+			print('fail')
+		try:
+			PrecRecallCurve(pred_prob, testY, type)
+			print('Precisoin Recall curve')
+		except:
+			print('Failed')
+		trainTestBar(predTr, trainY, pred, testY, type)
+		print('train test bar')
 

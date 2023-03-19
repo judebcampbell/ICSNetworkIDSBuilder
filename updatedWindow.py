@@ -51,7 +51,7 @@ class Ui_MainWindow(object):
 
         # Widget containing Set up information
         self.SetUpWIDGET = QtWidgets.QTabWidget(parent=self.centralwidget)
-        self.SetUpWIDGET.setGeometry(QtCore.QRect(10, 70, 641, 801))
+        self.SetUpWIDGET.setGeometry(QtCore.QRect(10, 70, 641, 781))
         font = QtGui.QFont()
         font.setFamily("Arial")
         self.SetUpWIDGET.setFont(font)
@@ -165,12 +165,12 @@ class Ui_MainWindow(object):
         # Output WIDGET at the bottom of the SCREEN
         self.graphOutputWIDGET = QtWidgets.QWidget(parent=self.SelectionTAB)
         self.graphOutputWIDGET.setEnabled(True)
-        self.graphOutputWIDGET.setGeometry(QtCore.QRect(0, 150, 641, 701))
+        self.graphOutputWIDGET.setGeometry(QtCore.QRect(0, 150, 641, 601))
         self.graphOutputWIDGET.setObjectName("graphOutputWIDGET")
 
         # TAB WIDGET for different graphs based on metrics 
         self.tabWidget = QtWidgets.QTabWidget(parent=self.graphOutputWIDGET)
-        self.tabWidget.setGeometry(QtCore.QRect(10, 100, 631, 601))
+        self.tabWidget.setGeometry(QtCore.QRect(10, 100, 631, 501))
         self.tabWidget.setTabPosition(QtWidgets.QTabWidget.TabPosition.East)
         self.tabWidget.setTabShape(QtWidgets.QTabWidget.TabShape.Triangular)
         self.tabWidget.setElideMode(QtCore.Qt.TextElideMode.ElideNone)
@@ -318,7 +318,7 @@ class Ui_MainWindow(object):
         self.TargetsFileStatusLABEL.setText(_translate("MainWindow", "file not found"))
         self.StartBUTTON.setText(_translate("MainWindow", "Start"))
         self.PreprocessingCHECK.setText(_translate("MainWindow", "Include Data Preprocessing     "))
-        self.trainingSummariesCHECK.setText(_translate("MainWindow", "Provide Training Summaries     "))
+        self.trainingSummariesCHECK.setText(_translate("MainWindow", "Labels are in datafile     "))
         self.SetUpWIDGET.setTabText(self.SetUpWIDGET.indexOf(self.SelectionTAB), _translate("MainWindow", "Model Selection"))
         self.SetUpWIDGET.setTabText(self.SetUpWIDGET.indexOf(self.LiveTAB), _translate("MainWindow", "Live Monitoring"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.TimeTAB), _translate("MainWindow", "Time"))
@@ -326,7 +326,7 @@ class Ui_MainWindow(object):
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.RecallTAB), _translate("MainWindow", "Recall"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.F1TAB), _translate("MainWindow", "F1"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.evalTimeTAB), _translate("MainWindow", "Eval Time"))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.balAccTAB), _translate("MainWindow", "Balanced Accuracy"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.balAccTAB), _translate("MainWindow", "Balanced Acc"))
         self.OutputLABEL.setText(_translate("MainWindow", "Show Data For:"))
         self.optimisationCHECK.setText(_translate("MainWindow", "     Best Models Optimisations"))
         self.TrainingCHECK.setText(_translate("MainWindow", "     Initial Training"))
@@ -372,33 +372,40 @@ class Ui_MainWindow(object):
     
         if self.trainFileFound == True and self.targetFileFound == True:
             self.StartBUTTON.setEnabled(True)
+        elif self.trainFileFound == True and self.trainingSummariesCHECK.isChecked() == True:
+            self.StartBUTTON.setEnabled(True)
         else:
             self.StartBUTTON.setEnabled(False)
 
         return
 
     def showPlots(self):
-        
+        self.tabWidget.setTabVisible(self.tabWidget.indexOf(self.F1TAB), True)
+        self.tabWidget.setTabVisible(self.tabWidget.indexOf(self.balAccTAB), True)
         # Eval times
         image_profile = QtGui.QImage('figures/TrainingEvalTimeStackedBars.png') #QImage object
         image_profile = image_profile.scaled(self.evalTimeTABOutputLABEL.width(), self.evalTimeTABOutputLABEL.height(), aspectRatioMode=QtCore.Qt.AspectRatioMode.KeepAspectRatio, transformMode=QtCore.Qt.TransformationMode.SmoothTransformation) # To scale image for example and keep its Aspect Ration    
         self.evalTimeTABOutputLABEL.setPixmap(QtGui.QPixmap.fromImage(image_profile)) 
         self.evalTimeTABOutputLABEL.setStyleSheet(f"qproperty-alignment: {int(QtCore.Qt.AlignmentFlag.AlignCenter)};")
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.evalTimeTAB), ("Eval Time"))
         # Training Times
         image_profile2 = QtGui.QImage('figures/TrainingTimeSeperateBars.png') #QImage object
         image_profile2 = image_profile2.scaled(self.timeOutputLABEL.width() ,self.timeOutputLABEL.height(), aspectRatioMode=QtCore.Qt.AspectRatioMode.KeepAspectRatio, transformMode=QtCore.Qt.TransformationMode.SmoothTransformation) # To scale image for example and keep its Aspect Ration    
         self.timeOutputLABEL.setPixmap(QtGui.QPixmap.fromImage(image_profile2)) 
         self.timeOutputLABEL.setStyleSheet(f"qproperty-alignment: {int(QtCore.Qt.AlignmentFlag.AlignCenter)};")
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.TimeTAB), ("Time"))
         # Recall
         image_profile3 = QtGui.QImage('figures/TrainingRecallLineGraph.png') #QImage object
         image_profile3 = image_profile3.scaled(self.recallOutputLABEL.width() ,self.recallOutputLABEL.height(), aspectRatioMode=QtCore.Qt.AspectRatioMode.KeepAspectRatio, transformMode=QtCore.Qt.TransformationMode.SmoothTransformation) # To scale image for example and keep its Aspect Ration    
         self.recallOutputLABEL.setPixmap(QtGui.QPixmap.fromImage(image_profile3)) 
         self.recallOutputLABEL.setStyleSheet(f"qproperty-alignment: {int(QtCore.Qt.AlignmentFlag.AlignCenter)};")
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.RecallTAB), ("Recall"))
 
         image_profile4 = QtGui.QImage('figures/TrainingPrecisionBoxPlots.png') #QImage object
         image_profile4 = image_profile4.scaled(self.precisionOutputLABEL.width() ,self.precisionOutputLABEL.height(), aspectRatioMode=QtCore.Qt.AspectRatioMode.KeepAspectRatio, transformMode=QtCore.Qt.TransformationMode.SmoothTransformation) # To scale image for example and keep its Aspect Ration    
         self.precisionOutputLABEL.setPixmap(QtGui.QPixmap.fromImage(image_profile4)) 
         self.precisionOutputLABEL.setStyleSheet(f"qproperty-alignment: {int(QtCore.Qt.AlignmentFlag.AlignCenter)};")
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.PrecisionTAB), ("Precision"))
 
         image_profile5 = QtGui.QImage('figures/Trainingf1BoxPlots.png') #QImage object
         image_profile5 = image_profile5.scaled(self.f1OutputLABEL.width() ,self.f1OutputLABEL.height(), aspectRatioMode=QtCore.Qt.AspectRatioMode.KeepAspectRatio, transformMode=QtCore.Qt.TransformationMode.SmoothTransformation) # To scale image for example and keep its Aspect Ration    
@@ -411,26 +418,33 @@ class Ui_MainWindow(object):
         self.balAccTabOutputLABEL.setStyleSheet(f"qproperty-alignment: {int(QtCore.Qt.AlignmentFlag.AlignCenter)};")
 
     def OptimisationPlots(self):
+        self.tabWidget.setTabVisible(self.tabWidget.indexOf(self.F1TAB), True)
+        self.tabWidget.setTabVisible(self.tabWidget.indexOf(self.balAccTAB), True)
         # Eval times
         image_profile = QtGui.QImage('figures/OptimisedEvalTimeStackedBars.png') #QImage object
         image_profile = image_profile.scaled(self.evalTimeTABOutputLABEL.width(), self.evalTimeTABOutputLABEL.height(), aspectRatioMode=QtCore.Qt.AspectRatioMode.KeepAspectRatio, transformMode=QtCore.Qt.TransformationMode.SmoothTransformation) # To scale image for example and keep its Aspect Ration    
         self.evalTimeTABOutputLABEL.setPixmap(QtGui.QPixmap.fromImage(image_profile)) 
         self.evalTimeTABOutputLABEL.setStyleSheet(f"qproperty-alignment: {int(QtCore.Qt.AlignmentFlag.AlignCenter)};")
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.evalTimeTAB), ("Eval Time"))
         # Training Times
         image_profile2 = QtGui.QImage('figures/OptimisedTimeSeperateBars.png') #QImage object
         image_profile2 = image_profile2.scaled(self.timeOutputLABEL.width() ,self.timeOutputLABEL.height(), aspectRatioMode=QtCore.Qt.AspectRatioMode.KeepAspectRatio, transformMode=QtCore.Qt.TransformationMode.SmoothTransformation) # To scale image for example and keep its Aspect Ration    
         self.timeOutputLABEL.setPixmap(QtGui.QPixmap.fromImage(image_profile2)) 
         self.timeOutputLABEL.setStyleSheet(f"qproperty-alignment: {int(QtCore.Qt.AlignmentFlag.AlignCenter)};")
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.TimeTAB), ("Time"))
         # Recall
         image_profile3 = QtGui.QImage('figures/OptimisedRecallLineGraph.png') #QImage object
         image_profile3 = image_profile3.scaled(self.recallOutputLABEL.width() ,self.recallOutputLABEL.height(), aspectRatioMode=QtCore.Qt.AspectRatioMode.KeepAspectRatio, transformMode=QtCore.Qt.TransformationMode.SmoothTransformation) # To scale image for example and keep its Aspect Ration    
         self.recallOutputLABEL.setPixmap(QtGui.QPixmap.fromImage(image_profile3)) 
         self.recallOutputLABEL.setStyleSheet(f"qproperty-alignment: {int(QtCore.Qt.AlignmentFlag.AlignCenter)};")
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.RecallTAB), ("Recall"))
+
 
         image_profile4 = QtGui.QImage('figures/OptimisedPrecisionBoxPlots.png') #QImage object
         image_profile4 = image_profile4.scaled(self.precisionOutputLABEL.width() ,self.precisionOutputLABEL.height(), aspectRatioMode=QtCore.Qt.AspectRatioMode.KeepAspectRatio, transformMode=QtCore.Qt.TransformationMode.SmoothTransformation) # To scale image for example and keep its Aspect Ration    
         self.precisionOutputLABEL.setPixmap(QtGui.QPixmap.fromImage(image_profile4)) 
         self.precisionOutputLABEL.setStyleSheet(f"qproperty-alignment: {int(QtCore.Qt.AlignmentFlag.AlignCenter)};")
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.PrecisionTAB), ("Precision"))
 
         image_profile5 = QtGui.QImage('figures/Optimisedf1BoxPlots.png') #QImage object
         image_profile5 = image_profile5.scaled(self.f1OutputLABEL.width() ,self.f1OutputLABEL.height(), aspectRatioMode=QtCore.Qt.AspectRatioMode.KeepAspectRatio, transformMode=QtCore.Qt.TransformationMode.SmoothTransformation) # To scale image for example and keep its Aspect Ration    
@@ -442,9 +456,48 @@ class Ui_MainWindow(object):
         self.balAccTabOutputLABEL.setPixmap(QtGui.QPixmap.fromImage(image_profile6)) 
         self.balAccTabOutputLABEL.setStyleSheet(f"qproperty-alignment: {int(QtCore.Qt.AlignmentFlag.AlignCenter)};")
 
+    def BestPlots(self):
+        #self.tabWidget.setTabVisible(self.tabWidget.indexOf(self.PrecisionTAB), False)
+        self.tabWidget.setTabVisible(self.tabWidget.indexOf(self.F1TAB), False)
+        self.tabWidget.setTabVisible(self.tabWidget.indexOf(self.balAccTAB), False)
+        # Confusion Matrixf
+        image_profile = QtGui.QImage('figures/BestMATRIX.png') #QImage object
+        image_profile = image_profile.scaled(self.evalTimeTABOutputLABEL.width(), self.evalTimeTABOutputLABEL.height(), aspectRatioMode=QtCore.Qt.AspectRatioMode.KeepAspectRatio, transformMode=QtCore.Qt.TransformationMode.SmoothTransformation) # To scale image for example and keep its Aspect Ration    
+        self.evalTimeTABOutputLABEL.setPixmap(QtGui.QPixmap.fromImage(image_profile)) 
+        self.evalTimeTABOutputLABEL.setStyleSheet(f"qproperty-alignment: {int(QtCore.Qt.AlignmentFlag.AlignCenter)};")
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.evalTimeTAB), ("Confusion Mx"))
+        # ROC Curve
+        image_profile2 = QtGui.QImage('figures/BestROC.png') #QImage object
+        image_profile2 = image_profile2.scaled(self.timeOutputLABEL.width() ,self.timeOutputLABEL.height(), aspectRatioMode=QtCore.Qt.AspectRatioMode.KeepAspectRatio, transformMode=QtCore.Qt.TransformationMode.SmoothTransformation) # To scale image for example and keep its Aspect Ration    
+        self.timeOutputLABEL.setPixmap(QtGui.QPixmap.fromImage(image_profile2)) 
+        self.timeOutputLABEL.setStyleSheet(f"qproperty-alignment: {int(QtCore.Qt.AlignmentFlag.AlignCenter)};")
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.TimeTAB), ("ROC"))
+        
+
+        # Prec Recall Curve
+        image_profile3 = QtGui.QImage('figures/BestPrecRecallCurve.png') #QImage object
+        image_profile3 = image_profile3.scaled(self.recallOutputLABEL.width() ,self.recallOutputLABEL.height(), aspectRatioMode=QtCore.Qt.AspectRatioMode.KeepAspectRatio, transformMode=QtCore.Qt.TransformationMode.SmoothTransformation) # To scale image for example and keep its Aspect Ration    
+        self.recallOutputLABEL.setPixmap(QtGui.QPixmap.fromImage(image_profile3)) 
+        self.recallOutputLABEL.setStyleSheet(f"qproperty-alignment: {int(QtCore.Qt.AlignmentFlag.AlignCenter)};")
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.RecallTAB), ("Precision Recall Curve"))
+
+        # Metrics
+        image_profile4 = QtGui.QImage('figures/BestMetrics.png') #QImage object
+        image_profile4 = image_profile4.scaled(self.precisionOutputLABEL.width() ,self.precisionOutputLABEL.height(), aspectRatioMode=QtCore.Qt.AspectRatioMode.KeepAspectRatio, transformMode=QtCore.Qt.TransformationMode.SmoothTransformation) # To scale image for example and keep its Aspect Ration    
+        self.precisionOutputLABEL.setPixmap(QtGui.QPixmap.fromImage(image_profile4)) 
+        self.precisionOutputLABEL.setStyleSheet(f"qproperty-alignment: {int(QtCore.Qt.AlignmentFlag.AlignCenter)};")
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.PrecisionTAB), ("Metric Performance"))
+
+        #image_profile5 = QtGui.QImage('figures/Optimisedf1BoxPlots.png') #QImage object
+        #image_profile5 = image_profile5.scaled(self.f1OutputLABEL.width() ,self.f1OutputLABEL.height(), aspectRatioMode=QtCore.Qt.AspectRatioMode.KeepAspectRatio, transformMode=QtCore.Qt.TransformationMode.SmoothTransformation) # To scale image for example and keep its Aspect Ration    
+        #self.f1OutputLABEL.setPixmap(QtGui.QPixmap.fromImage(image_profile5)) 
+        #self.f1OutputLABEL.setStyleSheet(f"qproperty-alignment: {int(QtCore.Qt.AlignmentFlag.AlignCenter)};")
+
     def handleStory(self):
         if self.PreprocessingCHECK.isChecked():
             self.modelNames, self.trainResults, self.oModelNames, self.oResults, self.size = us.fullToLive(self.trainingfile, self.targetfile)
+        elif self.trainingSummariesCHECK.isChecked():
+            self.modelNames, self.trainResults, self.oModelNames, self.oResults = us.modelSelection1File(self.trainingfile)
         else:
             self.modelNames, selt.trainResults, self.oModelNames, self.oResults = us.modelSelectionNoProcessing(self.trainingfile, self.targetfile)
 
@@ -462,13 +515,9 @@ class Ui_MainWindow(object):
             self.OptimisationPlots()
         if self.TrainingCHECK.isChecked():
             self.showPlots()
+        if self.BestCHECK.isChecked():
+            self.BestPlots()
         
     def setOutputStats(self):
         text = open('figures/outputText.txt').read()
         self.OUTPUTstats.setPlainText(text)
-
-
-   
-
-
-

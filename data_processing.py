@@ -47,7 +47,7 @@ def timestampSize(file,label, windowSize=20):
 		timer = t
 		attackFound = 0
 		timestampLabels = []
-		for i in range(len(label)):
+		for i in range(len(times)):
 			if i == 0:
 				start = int(times[i])
 			difference = int(times[i]) - start
