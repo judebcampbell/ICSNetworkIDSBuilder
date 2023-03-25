@@ -26,6 +26,7 @@ import model_files as fm
 import graph_production as gp
 
 from scapy.all import *
+from sklearn.decomposition import PCA
 from threading import Thread
 import time 
 '''
@@ -38,6 +39,9 @@ def fullToLive(file, targetFile):
 	labels = fm.toList(targetFile) # generate target list
 	training, targets, freq = dp.timestamps(openedFile, labels) # transform training data and targets
 
+	print(training.head(10))
+	training.to_csv('data/timestamps/52minuteTIMESTAMPS.csv')
+	
 	val = len(training)
 	split = round(0.8 * len(training))
 	trainX = training[:split]
@@ -80,9 +84,35 @@ Function to find best model for data that does not need to be processed in the s
 def modelSelectionNoProcessing(file, targets):
 	start = time.time()
 	f =  open(('figures/outputText.txt'), "w")
-	targets = fm.toList(targetFile) # generate target list
+	targets = fm.toList(targets) # generate target list
 	training = pd.read_csv(file)
+	print(len(training))
+	print(len(targets))
 
+
+	print(training.dtypes)
+	to_del = []
+	for column in training:
+		if training[column].dtypes == 'object':
+			col_id = str(column) + '_id'
+			training[col_id], x = pd.factorize(training[column])
+			to_del.append(column)
+
+	training =  training.drop(to_del, axis=1)
+	training = training.reset_index()
+	training['label'] = targets
+	training = training.replace((np.inf, -np.inf, np.nan), 0).reset_index(drop=True)
+	#training = training.dropna()
+	targets = training['label']
+	training =  training.drop('label', axis=1)
+	training = training.reset_index()
+	print(training.head(5))
+
+	pca = PCA(n_components=30)
+	training = pca.fit_transform(training)
+	print(pca.explained_variance_ratio_)
+	print(pca.singular_values_)
+	
 
 	val = len(training)
 	split = round(0.8 * len(training))
@@ -92,7 +122,7 @@ def modelSelectionNoProcessing(file, targets):
 	testY = targets[split:]
 
 	print("\n class balance normal to abnormal in the produced data")
-	n, a =gp.class_balance_binary(targets)
+	n, a =gp.class_balance_binary(trainY)
 	print(n, a)
 
 	model_names, results, pipelines = ms.trainModels(trainX, trainY) #train the initial models
@@ -111,12 +141,12 @@ def modelSelectionNoProcessing(file, targets):
 	f.write("\nBest model found was: " + str(final_name))
 	f.write("\nTraining data size:   " + str(split) + "\n")
 	f.write("Test data size:   " + str(val - split) + "\n")
-	f.write("Feature vectors calculated every  " + str(freq) + '  seconds' + "\n")
+	#f.write("Feature vectors calculated every  " + str(freq) + '  seconds' + "\n")
 	f.write("Class imbalance:" + "\n")
 	f.write("	Normal:  " + str(n) + "\n")
 	f.write("	Abnormal:  " + str(a) + "\n")
 	f.close()
-	return(model_names, results, tuned_model_names, tuned_results, freq)
+	return(model_names, results, tuned_model_names, tuned_results)
 
 def modelSelection1File(file):
 	start = time.time()
@@ -129,40 +159,21 @@ def modelSelection1File(file):
 	training = pd.read_csv(file)
 	print('Read Training file')
 	print(training.head(5))
-	labels = list(training['label'])
+	#training =  training.iloc[:1000000]
+	labels, c = pd.factorize(training['label'])
+	labels = labels.tolist()
+	print(len(set(labels)))
 	print('Extracted targets')
 
 	training = training.drop(['label'], axis=1)
+	training, targets = dp.electraTimestamps(training, labels)
 	print('Data ready')
-	targets = []
-	dic = {}
-	numer = 0
-	for l in labels:
-		if l in dic:
-			targets.append(dic[l])
-		else:
-			dic[l] = numer
-			targets.append(numer)
-			numer += 1
-	if 'smac' and 'dmac' in training:
-		unique_values = pd.unique(training[['smac', 'dmac']].values.ravel())
-		code_map = dict(zip(unique_values, range(len(unique_values))))
-		training['src']= training['smac'].map(code_map)
-		training['dst'] = training['dmac'].map(code_map)
-		training = training.drop(['smac'], axis=1)
-		training = training.drop(['dmac'], axis=1)
-	if 'sip' and 'dip' in training:
-		unique_values = pd.unique(training[['sip', 'dip']].values.ravel())
-		code_map = dict(zip(unique_values, range(len(unique_values))))
-		training['dstIP']= training['dip'].map(code_map)
-		training['srcIP'] = training['sip'].map(code_map)
-		training = training.drop(['sip'], axis=1)
-		training = training.drop(['dip'], axis=1)
 	print(training.head(5))
-	print(targets[:10])
+	print(targets)
+
 
 	val = len(training)
-	split = round(0.001 * len(training))
+	split = round(0.1 * len(training))
 	trainX = training[:split]
 	trainY = targets[:split]
 	testX = training[split:]
@@ -195,12 +206,13 @@ def modelSelection1File(file):
 	f.write("Time taken to process = " + str(end))
 	f.write("\nBest model found was: " + str(final_name))
 	f.write("\nTraining data size:   " + str(split) + "\n")
-	f.write("Test data size:   " + str(val - split) + "\n")
+	f.write("Test data size:   " + str(val-split) + "\n")
 	#f.write("Feature vectors calculated every  " + str(freq) + '  seconds' + "\n")
 	f.write("Class imbalance:" + "\n")
 	f.write("	Normal:  " + str(n) + "\n")
 	f.write("	Abnormal:  " + str(a) + "\n")
 	f.close()
+	print(tuned_results)
 	return(model_names, results, tuned_model_names, tuned_results)
 '''
 Function for live continous data captures on the relevant testbed
@@ -260,7 +272,7 @@ if __name__ == "__main__":
 	#labels = fm.toList('data/timestamps/training45mClassEDITED.txt') # generate target list
 	#training, targets = dp.timestamps(openedFile, labels, 1)
 	#dp.timestampSize(openedFile, labels)
-	tn, tr, on, opr, freq = fullToLive('data/timestamps/training45m.pcapng', 'data/timestamps/training52MinutesClass.txt')
+	tn, tr, on, opr, freq = modelSelectionNoProcessing('data/evaluation/WADI_attackdata.csv', 'data/evaluation/WADI_attackdataClass.txt')
 	#print(tr)
 
 

@@ -193,7 +193,7 @@ def confusionMatrixFunc(pred, y, type):
 		columns = list(range(1, cm.shape[1]+1))
 		df_cm = pd.DataFrame(cm, index=index, columns=columns)
 	plt.figure(figsize=(7,5))
-	sns.heatmap(df_cm, annot=True, cmap='Set3')
+	sns.heatmap(df_cm, annot=True, cmap='gnuplot2')
 	plt.title("Confusion Matrix for best Model")
 	save = 'figures/BestMATRIX.png'
 	plt.savefig(save)
@@ -248,6 +248,8 @@ def trainTestBar(predTr, trainY, pred, y, type):
 def generateUnseenData(models, testX, testY, trainX, trainY, type):
 	
 	for model in models:
+		print(len(testX))
+		print(len(testY))
 
 		pred = model.predict(testX)
 		print('predict test')
@@ -269,4 +271,14 @@ def generateUnseenData(models, testX, testY, trainX, trainY, type):
 			print('Failed')
 		trainTestBar(predTr, trainY, pred, testY, type)
 		print('train test bar')
+
+
+
+
+		
+
+
+
+
+
 

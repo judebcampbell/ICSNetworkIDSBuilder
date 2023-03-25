@@ -283,6 +283,37 @@ class Ui_MainWindow(object):
         self.OutputSectionLABEL.setFont(font)
         self.OutputSectionLABEL.setObjectName("OutputSectionLABEL")
 
+        self.ModelFileLABEL = QtWidgets.QLabel(parent=self.LiveTAB)
+        self.ModelFileLABEL.setGeometry(QtCore.QRect(20, 10, 101, 21))
+        font = QtGui.QFont()
+        font.setFamily("Arial")
+        self.ModelFileLABEL.setFont(font)
+        self.ModelFileLABEL.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
+        self.ModelFileLABEL.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight|QtCore.Qt.AlignmentFlag.AlignTrailing|QtCore.Qt.AlignmentFlag.AlignVCenter)
+        self.ModelFileLABEL.setObjectName("ModelFileLABEL")
+        self.timestampFreqLABEL = QtWidgets.QLabel(parent=self.LiveTAB)
+        self.timestampFreqLABEL.setGeometry(QtCore.QRect(20, 40, 101, 21))
+        font = QtGui.QFont()
+        font.setFamily("Arial")
+        self.timestampFreqLABEL.setFont(font)
+        self.timestampFreqLABEL.setLayoutDirection(QtCore.Qt.LayoutDirection.RightToLeft)
+        self.timestampFreqLABEL.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight|QtCore.Qt.AlignmentFlag.AlignTrailing|QtCore.Qt.AlignmentFlag.AlignVCenter)
+        self.timestampFreqLABEL.setObjectName("timestampFreqLABEL")
+        self.modelFileINPUT = QtWidgets.QLineEdit(parent=self.LiveTAB)
+        self.modelFileINPUT.setGeometry(QtCore.QRect(130, 10, 371, 21))
+        self.modelFileINPUT.setObjectName("modelFileINPUT")
+        self.freqINPUT = QtWidgets.QLineEdit(parent=self.LiveTAB)
+        self.freqINPUT.setGeometry(QtCore.QRect(130, 40, 371, 21))
+        self.freqINPUT.setText("")
+        self.freqINPUT.setObjectName("freqINPUT")
+        self.attackDetecOUTPUT = QtWidgets.QTextBrowser(parent=self.LiveTAB)
+        self.attackDetecOUTPUT.setGeometry(QtCore.QRect(10, 120, 621, 211))
+        self.attackDetecOUTPUT.setObjectName("attackDetecOUTPUT")
+        self.startLiveBUTTON = QtWidgets.QPushButton(parent=self.LiveTAB)
+        self.startLiveBUTTON.setGeometry(QtCore.QRect(500, 70, 131, 31))
+        self.startLiveBUTTON.setObjectName("startLiveBUTTON")
+        self.SetUpWIDGET.addTab(self.LiveTAB, "")
+    
         self.TitleLABEL = QtWidgets.QLabel(parent=self.centralwidget)
         self.TitleLABEL.setGeometry(QtCore.QRect(10, 0, 641, 31))
         font = QtGui.QFont()
@@ -303,6 +334,8 @@ class Ui_MainWindow(object):
         MainWindow.setStatusBar(self.statusbar)
         self.TrainingFileLABEL.setBuddy(self.trainingFileINPUT)
         self.TargetFileLABEL.setBuddy(self.targetfileINPUT)
+        self.ModelFileLABEL.setBuddy(self.trainingFileINPUT)
+        self.timestampFreqLABEL.setBuddy(self.targetfileINPUT)
 
         self.retranslateUi(MainWindow)
         self.SetUpWIDGET.setCurrentIndex(0)
@@ -333,6 +366,19 @@ class Ui_MainWindow(object):
         self.BestCHECK.setText(_translate("MainWindow", "     Best Model"))
         self.UpdateGraphBUTTON.setText(_translate("MainWindow", "Update"))
         self.SetUpLABEL.setText(_translate("MainWindow", "Select the action you want"))
+        self.ModelFileLABEL.setText(_translate("MainWindow", "Model File:"))
+        self.timestampFreqLABEL.setText(_translate("MainWindow", "Frequency:"))
+        self.attackDetecOUTPUT.setHtml(_translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"hr { height: 1px; border-width: 0; }\n"
+"li.unchecked::marker { content: \"\\2610\"; }\n"
+"li.checked::marker { content: \"\\2612\"; }\n"
+"</style></head><body style=\" font-family:\'Arial\'; font-size:13pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Attack Detection Output</p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p></body></html>"))
+        self.startLiveBUTTON.setText(_translate("MainWindow", "Start Live Detection"))
+        self.SetUpWIDGET.setTabText(self.SetUpWIDGET.indexOf(self.LiveTAB), _translate("MainWindow", "Live Monitoring"))
         self.OutputSectionLABEL.setText(_translate("MainWindow", "Output Results"))
         self.TitleLABEL.setText(_translate("MainWindow", "Network IDS Tool"))
 
@@ -499,7 +545,7 @@ class Ui_MainWindow(object):
         elif self.trainingSummariesCHECK.isChecked():
             self.modelNames, self.trainResults, self.oModelNames, self.oResults = us.modelSelection1File(self.trainingfile)
         else:
-            self.modelNames, selt.trainResults, self.oModelNames, self.oResults = us.modelSelectionNoProcessing(self.trainingfile, self.targetfile)
+            self.modelNames, self.trainResults, self.oModelNames, self.oResults = us.modelSelectionNoProcessing(self.trainingfile, self.targetfile)
 
         print(self.trainResults)
         print(self.oModelNames[0])

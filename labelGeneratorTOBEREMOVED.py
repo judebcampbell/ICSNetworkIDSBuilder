@@ -1,4 +1,6 @@
 from scapy.all import *
+import numpy as np 
+import pandas as pd
 import graph_production as pg
 
 def l4AttackGenerator(openfilename):
@@ -90,6 +92,151 @@ def l5AttackClassifier(openfilename):
 
 	return(labels)
 
+
+def WADILabeler(openfilename):
+	labels = []
+	df = pd.read_csv(openfilename)
+	for index, row in df.iterrows():
+		numb = row['Time'].split()
+		am = numb[-1]
+		numb = numb[0].split(":")
+		x = numb[2][:2]
+		x = int(x)
+		if am == 'AM':
+			am = True
+		else:
+			am = False
+
+		if row['Date'] == '10/9/2017' and numb[0] == '7' and am == False:
+			if int(numb[1]) >= 25 and int(numb[1]) < 50:
+				print('9th attack s')
+				labels.append(1)
+				continue
+			elif int(numb[1]) == 50 and int(numb[2][:2]) < 16:
+				labels.append(1)
+				continue
+		
+		if row['Date'] == '10/10/2017' and numb[0] == '10':
+			if int(numb[1]) > 24 and int(numb[1]) < 34:
+				labels.append(1)
+				continue
+			elif int(numb[1]) == 24 and int(numb[2][:2]) > 10:
+				labels.append(1)
+				continue
+			elif int(numb[1]) >= 55:
+				labels.append(1)
+				continue
+			
+		if row['Date'] == '10/10/2017' and numb[0] == '11' and int(numb[2][:2]) < 24:
+				labels.append(1)
+				continue
+
+		if row['Date'] == '10/10/2017' and numb[0] == '11':
+			if (30 < int(numb[1]) < 44):
+				labels.append(1)
+				continue
+			elif int(numb[2][:2]) >= 40 and int(numb[1]) == 30:
+				labels.append(1)
+				continue
+			elif int(numb[2][:2]) <=50 and int(numb[1]) == 44:
+				labels.append(1)
+				continue
+
+		if row['Date'] == '10/10/2017' and numb[0] == '1' and am == False:
+			if (39 < int(numb[1]) < 50):
+				labels.append(1)
+				continue
+			elif int(numb[2][:2]) >= 30 and int(numb[1]) == 39:
+				labels.append(1)
+				continue
+			elif int(numb[2][:2]) <=40 and int(numb[1]) == 50:
+				labels.append(1)
+				continue
+
+		if row['Date'] == '10/10/2017' and numb[0] == '2' and am == False:
+			if (48 < int(numb[1]) < 59):
+				labels.append(1)
+				continue
+			elif int(numb[2][:2]) >= 17 and int(numb[1]) == 38:
+				labels.append(1)
+				continue
+			elif int(numb[2][:2]) <=55 and int(numb[1]) == 59:
+				labels.append(1)
+				continue
+
+		if row['Date'] == '10/10/2017' and numb[0] == '5' and am == False:
+			if (40 <= int(numb[1]) < 49):
+				labels.append(1)
+				continue
+			elif int(numb[2][:2]) <=40 and int(numb[1]) == 49:
+				labels.append(1)
+				continue
+
+		if row['Date'] == '10/11/2017' and numb[0] == '10':
+			if (55 <= int(numb[1]) < 56):
+				labels.append(1)
+				continue
+			elif int(numb[2][:2]) <=27 and int(numb[1]) == 56:
+				labels.append(1)
+				continue
+
+		if row['Date'] == '10/11/2017' and numb[0] == '11':
+			if (17 < int(numb[1]) < 31):
+				labels.append(1)
+			elif int(numb[2][:2]) >= 54 and int(numb[1]) == 17:
+				labels.append(1)
+				continue
+			elif int(numb[2][:2]) <=20 and int(numb[1]) == 31:
+				labels.append(1)
+				continue
+
+		if row['Date'] == '10/11/2017' and numb[0] == '11':
+			if (36 < int(numb[1]) < 47):
+				labels.append(1)
+				continue
+			elif int(numb[2][:2]) >= 31 and int(numb[1]) == 36:
+				labels.append(1)
+				continue
+			elif int(numb[1]) == 59:
+				labels.append(1)
+				continue
+
+		if row['Date'] == '10/11/2017' and (numb[0] == '12'):
+			if int(numb[1]) < 5:
+				labels.append(1)
+				continue
+			if (7 < int(numb[1]) < 10):
+				labels.append(1)
+				continue
+			elif int(numb[2][:2]) >= 30 and int(numb[1]) == 7:
+				labels.append(1)
+				continue
+			elif int(numb[2][:2]) <=52 and int(numb[1]) == 10:
+				labels.append(1)
+				continue
+
+		if row['Date'] == '10/11/2017' and numb[0] == '12':
+			if (16 <= int(numb[1]) < 25):
+				labels.append(1)
+				continue
+			elif int(numb[2][:2]) <=36 and int(numb[1]) == 25:
+				labels.append(1)
+				continue
+
+		if row['Date'] == '10/11/2017' and numb[0] == '3' and am == False:
+			if (26 < int(numb[1]) < 37):
+				print('attack')
+				labels.append(1)
+				continue
+			elif int(numb[2][:2]) >= 30 and int(numb[1]) == 26:
+				labels.append(1)
+				continue
+ 
+		labels.append(0)
+	
+
+	return(labels)
+
 # Generate Labels for clean data sets
 def cleanLabels(openfilename):
 	openfile = rdpcap(openfilename)
@@ -101,65 +248,14 @@ def cleanLabels(openfilename):
 	return(labels)
 
 
-filename = 'training52Minutes'
-labels = l5AttackClassifier('data/timestamps/training52Minutes.pcapng')
+filename = 'WADI_attackdata'
+labels = WADILabeler('data/evaluation/WADI_attackdata.csv')
+print(len(labels))
 
-classfilename = 'data/timestamps/' + filename + 'Class.txt'
+classfilename = 'data/evaluation/' + filename + 'Class.txt'
 
 print(pg.class_balance_binary(labels))
 
 with open(classfilename, 'w') as f:
 	for l in labels:
-		f.write(str(l)+ "\n")
-
-with open("data/timestamps/training52MinutesClass.txt") as file:
-    generated = [int(line.strip()) for line in file]
-
-new = []
-
-for i in range(len(generated)):
-	if i < 4940:
-		print(i)
-		new.append(int(0))
-		continue
-	elif 8318 < i < 11609:
-		new.append(int(0))
-		continue
-	elif 25415 < i < 33501:
-		new.append(int(0))
-		continue
-	elif 38441 < i < 48195:
-		new.append(int(0))
-		continue
-	elif 100282 < i < 101850:
-		new.append(int(0))
-		continue
-	elif 103543 < i < 106860:
-		new.append(int(0))
-		continue
-	elif 211503 < i < 214666:
-		new.append(int(0))
-		continue
-	elif 216286 < i < 217931:
-		new.append(int(0))
-		continue
-	elif 219568 < i < 224328:
-		new.append(int(0))
-		continue
-	elif 325427 < i < 328624:
-		new.append(int(0))
-		continue
-	else: 
-		new.append(int(generated[i]))
-
-print('Original Class Imbalance')	
-print(pg.class_balance_binary(generated))
-print('Cleaned Class Imbalance')
-print(pg.class_balance_binary(new))
-
-filename = 'training52MinutesPOLISHED'
-
-classfilename = 'data/timestamps/' + filename + 'Class.txt'
-with open(classfilename, 'w') as f:
-	for l in new:
 		f.write(str(l)+ "\n")

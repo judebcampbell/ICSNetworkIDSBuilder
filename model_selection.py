@@ -38,7 +38,7 @@ def generatePipeline():
 	pipelines.append(('SGDC', (Pipeline([('SGDC', SGDClassifier())]))))
 	pipelines.append(('DecisionTree', (Pipeline([('DecisionTree', DecisionTreeClassifier())]))))
 	pipelines.append(('KNN', (Pipeline([('KNN', KNeighborsClassifier())]))))
-	pipelines.append(('SVC', (Pipeline([('SVC', SVC(probability=True, max_iter=5000))]))))
+	pipelines.append(('SVC', (Pipeline([('SVC', SVC(probability=True, max_iter=100))]))))
 	return(pipelines)
 
 
@@ -131,15 +131,32 @@ outputs:
 def evaluateModels(results, modelnames, n=3, models = None):
 	means = []
 	stds = []
+	times = []
 	best_models_names= []
 	best_model = []
 
 	for r in results:
-		means.append(r['test_balanced_accuracy'].mean())
-		stds.append(r['test_balanced_accuracy'].std())
+		times.append(r['fit_time'])
+	
+	all_times = [j for i in times for j in i]
+	avg = sum(all_times) / len(all_times)
+	print('The average time taken is:')
+	print(avg)
+	print('\n \n')
+	for r in results:
+		x = r['fit_time'].mean()
+		if x > avg * 1.25 and n > 1:
+			print(x)
+			means.append(0)
+			stds.append(0)
+		else:
+			means.append(r['test_f1'].mean())
+			stds.append(r['test_f1'].std())
+		#times.append(r['fit_time'].mean())
 	
 	#sort the means and get their index for finding model/model name
 	locations = sorted(range(len(means)), key=lambda i: means[i])[-n:]
+
 	for l in locations:
 		print("\n" +  str(modelnames[l]) + " Average F1: " + str(means[l]) + " Standard Deviation: " + str(stds[l]))
 		best_models_names.append(modelnames[l])

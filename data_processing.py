@@ -193,7 +193,7 @@ def timestamps(file, labels=None, size=None):
 
 		# No of unique sources and destinations
 		noSources = len(set(sources))
-		noDestinations = len(set(sources))
+		noDestinations = len(set(destinations))
 
 		noIP_src = len(set(ip_src))
 		noIP_dst = len(set(ip_dst))
@@ -240,3 +240,98 @@ def timestamps(file, labels=None, size=None):
 	
 	return(features)
 
+def electraTimestamps(file, labels):
+	size = 100
+	rows = []
+	total_time = file['Time'].loc[len(file)-1] - file['Time'].loc[0]
+	total_count = len(file)
+	
+	print(total_count)
+	#print(labels)
+	counter = 0
+	label_counter = 0
+	targets = []
+
+	while counter < total_count:
+		current_count = 0
+
+		sources = []
+		destinations = []
+		ip_src = []
+		ip_dst = []
+		requests = 0
+
+		#number of packets transferred
+		packetCount = 0
+
+		bytesTransfered = []
+		q1, q2, q3 = 0, 0, 0
+		smallest = 12000
+		largest = 0
+		totalBytes = 0
+
+		# tcp flags and arrvial times
+		errors = []
+		addresses = []
+
+		#labels
+		labelQueue =  []
+
+		time = int(file.loc[counter, 'Time'])
+
+		while current_count < size and counter < total_count:
+			sources.append(file.loc[counter, 'smac'])
+			destinations.append(file.loc[counter, 'dmac'])
+			ip_src.append(file.loc[counter, 'sip'])
+			ip_dst.append(file.loc[counter, 'dip'])
+			requests += int(file.loc[counter, 'request'])
+			bytesTransfered.append(int(file.loc[counter, 'data']))
+			labelQueue.append(labels[counter])
+			errors.append(int(file.loc[counter, 'error']))
+			addresses.append(int(file.loc[counter, 'address']))
+			time = int(file.loc[counter, 'Time']) - time
+
+			if counter == total_count or counter - 1 == total_count:
+				break
+
+			current_count += 1
+			counter += 1
+			if counter % 100000  == 0:
+				print(counter)
+		
+		totalBytes = sum(bytesTransfered)
+		try:
+			avg_bytes = totalBytes / current_count
+			smallest =  min(bytesTransfered)
+			largest =  max(bytesTransfered)
+		except:
+			avg_bytes = 0
+			smallest, largest = 0, 0 
+
+		q1, q2, q3 = np.percentile(bytesTransfered, [25, 50, 75]) 
+		noSources = len(set(sources))
+		noDestinations = len(set(destinations))
+		noIP_src = len(set(ip_src))
+		noIP_dst = len(set(ip_dst))
+
+		noErrors = len(set(errors))
+		noAdd = len(set(addresses))
+
+		row = [totalBytes, avg_bytes, smallest, largest, q1, q2, q3, 
+			  noSources, noDestinations, noIP_src, noIP_dst, noErrors, 
+			  noAdd, time
+			]
+
+		if 0 in labelQueue or 2 in labelQueue or 3 in labelQueue or 4 in labelQueue or 5 in labelQueue or 6 in labelQueue or 7 in labelQueue:
+			targets.append(1)
+		else:
+			targets.append(0)
+		
+		rows.append(row)
+		
+	features = pd.DataFrame(rows, columns=["Total Bytes", "Average Packet Size", "Smallest Packet", 
+									"Largest Packets", '25%', '50%', '75%', "No Sources", "No of Destinations", "No of IP srcs", 'No of IP dsts', 
+									"No Errors", "No PLC addresses", "Time taken"]
+							)
+	print(len(features))
+	return(features, targets)
