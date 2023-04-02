@@ -27,6 +27,7 @@ import graph_production as gp
 
 from scapy.all import *
 from sklearn.decomposition import PCA
+from sklearn.preprocessing import StandardScaler
 from threading import Thread
 import time 
 '''
@@ -41,6 +42,7 @@ def fullToLive(file, targetFile):
 
 	print(training.head(10))
 	training.to_csv('data/timestamps/52minuteTIMESTAMPS.csv')
+	dp.preprocessData(training, targets)
 	
 	val = len(training)
 	split = round(0.8 * len(training))
@@ -108,10 +110,17 @@ def modelSelectionNoProcessing(file, targets):
 	training = training.reset_index()
 	print(training.head(5))
 
-	pca = PCA(n_components=30)
-	training = pca.fit_transform(training)
-	print(pca.explained_variance_ratio_)
-	print(pca.singular_values_)
+	pre = dp.preprocessData(training, targets)
+	#training =  pre.transform(training)
+
+	#pca = PCA(n_components=30)
+	#training = pca.fit_transform(training)
+	#print(pca.explained_variance_ratio_)
+	#print(pca.singular_values_)
+	#training = dp.kBestFeatures(training, targets)
+
+	#scale_features_std = StandardScaler()
+	#features_train = scale_features_std.fit_transform(training)
 	
 
 	val = len(training)
@@ -166,7 +175,7 @@ def modelSelection1File(file):
 	print('Extracted targets')
 
 	training = training.drop(['label'], axis=1)
-	training, targets = dp.electraTimestamps(training, labels)
+	#training, targets = dp.electraTimestamps(training, labels)
 	print('Data ready')
 	print(training.head(5))
 	print(targets)

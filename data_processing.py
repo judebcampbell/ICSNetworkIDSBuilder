@@ -9,6 +9,16 @@ import numpy as np
 import pandas as pd
 
 import graph_production as gp
+from sklearn.feature_selection import SelectKBest
+
+from sklearn.preprocessing import RobustScaler
+from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import MaxAbsScaler
+
+from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.metrics import f1_score
+
 '''
 Function to read in target classes into a list
 '''
@@ -42,7 +52,6 @@ def timestampSize(file,label, windowSize=20):
 
 	timestampClasses = []
 	for j in range(len(l)):
-		print(l[j])
 		t = l[j]
 		timer = t
 		attackFound = 0
@@ -76,6 +85,9 @@ def timestampSize(file,label, windowSize=20):
 
 	return final_eval[-1]
 
+def kBestFeatures(file, label):
+	x = SelectKBest(k=20).fit_transform(file, label)
+	return(x)
 
 '''
 Function to Generate Features over the previous x seconds
@@ -240,6 +252,37 @@ def timestamps(file, labels=None, size=None):
 	
 	return(features)
 
+
+def preprocessData(x, y):
+	xs = [x]
+
+
+	rob = RobustScaler().fit(x)
+	xs.append(rob.transform(x))
+
+	scaler = StandardScaler().fit(x)
+	xs.append(scaler.transform(x))
+
+	maxabs = MaxAbsScaler().fit(x)
+	xs.append(maxabs.transform(x))
+
+	preprocess = [None, rob, scaler, maxabs]
+	f1s = []
+	print(preprocess)
+
+	for x in xs:
+		X_train, X_test, y_train, y_test = train_test_split( x, y, shuffle=False)
+		clf = DecisionTreeClassifier(random_state=42)
+		clf.fit(X_train, y_train)
+		predicts = clf.predict(X_test)
+		f1s.append(f1_score(y_test, predicts))
+
+	print(f1s)
+	locations = sorted(range(len(f1s)), key=lambda i: f1s[i])
+	print(locations[0])
+	print(preprocess[locations[0]])
+	return(preprocess[locations[0]])
+
 def electraTimestamps(file, labels):
 	size = 100
 	rows = []
@@ -330,8 +373,8 @@ def electraTimestamps(file, labels):
 		rows.append(row)
 		
 	features = pd.DataFrame(rows, columns=["Total Bytes", "Average Packet Size", "Smallest Packet", 
-									"Largest Packets", '25%', '50%', '75%', "No Sources", "No of Destinations", "No of IP srcs", 'No of IP dsts', 
-									"No Errors", "No PLC addresses", "Time taken"]
+									"Largest Packets", '25%', '50%', '75%', "No Sources", "No of Destinations", 
+									"No of IP srcs", 'No of IP dsts',  "No Errors", "No PLC addresses", "Time taken"]
 							)
 	print(len(features))
 	return(features, targets)

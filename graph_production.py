@@ -253,10 +253,13 @@ def generateUnseenData(models, testX, testY, trainX, trainY, type):
 
 		pred = model.predict(testX)
 		print('predict test')
-		pred_prob = model.predict_proba(testX)
-		print('predict probability test')
 		predTr = model.predict(trainX)
 		print('predict train')
+		try:
+			pred_prob = model.predict_proba(testX)
+			print('predict probability test')
+		except:
+			continue
 		confusionMatrixFunc(pred, testY, type)
 		print('confusion matrix')
 		try:
