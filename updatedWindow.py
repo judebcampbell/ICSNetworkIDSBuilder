@@ -9,9 +9,8 @@
 from PyQt6 import QtCore, QtGui, QtWidgets
 from PyQt6.QtGui import QPixmap
 from PIL import Image, ImageQt
-import matplotlib
-matplotlib.use('QT5Agg')
-
+import matplotlib as mpl
+print(mpl.get_cachedir)
 import user_steps as us
 
 from matplotlib.backends.backend_qt5agg import (
@@ -312,6 +311,7 @@ class Ui_MainWindow(object):
         self.startLiveBUTTON = QtWidgets.QPushButton(parent=self.LiveTAB)
         self.startLiveBUTTON.setGeometry(QtCore.QRect(500, 70, 131, 31))
         self.startLiveBUTTON.setObjectName("startLiveBUTTON")
+        self.startLiveBUTTON.clicked.connect(self.liveDetections)
         self.SetUpWIDGET.addTab(self.LiveTAB, "")
     
         self.TitleLABEL = QtWidgets.QLabel(parent=self.centralwidget)
@@ -567,3 +567,11 @@ class Ui_MainWindow(object):
     def setOutputStats(self):
         text = open('figures/outputText.txt').read()
         self.OUTPUTstats.setPlainText(text)
+    
+    def liveDetections(self):
+        freq = int(self.freqINPUT .text())
+        model = self.modelFileINPUT.text()
+        try:
+            us.liveAnalysis(modelFile=model, freq=freq)
+        except:
+            print("ERROR QUEEN")
