@@ -15,7 +15,7 @@ import warnings
 warnings.warn = warn
 
 import os
-import glob
+from glob import glob
 import json
 
 import numpy as np
@@ -201,7 +201,8 @@ def modelSelection1File(file):
 	print('Extracted targets')
 
 	training = training.drop(['label'], axis=1)
-	#training, targets = dp.electraTimestamps(training, labels)
+	
+	training, targets = dp.electraTimestamps(training, labels)
 	print('Data ready')
 	print(training.head(5))
 	print(targets)
@@ -269,33 +270,51 @@ def modelSelection1File(file):
 Function for live continous data captures on the relevant testbed
 '''
 def captureFunc():
+	os.system(r'C:\>"Program Files"\Wireshark\tshark -i "\Device\NPF_{1816C53A-67EF-4559-828E-6844F599F1D6}" -b duration:100 -b files:10 -w H:\ICSNetworkIDSBuilder-main\live_captures\file.pcapng')
 	return("Capture Func")
+	
 
 '''
 Function for predicting attacks and alerting user
 '''
 def detectionFunc(modelFile, timeSize):
+	f =  open(('live_captures/anomalyTimes.txt'), "w")
+	print("opening Models")
 	model = fm.openModel(modelFile)
 
-	list_of_files = glob.glob('live_captures/*.pcapng') # may need changed to .pcap - change path
-	latest_file = max(list_of_files, key=os.path.getmtime) # needs to change to getctime on Windows
+	time.sleep(300)
+
+	list_of_files = glob('live_captures/*.pcapng') # may need changed to .pcap - change path
+	latest_file = max(list_of_files, key=os.path.getctime) # needs to change to getctime on Windows
 
 	current = latest_file
+	counter = 1
 
 	while True:
-		data = rdpcap(current)
-		data = dp.timestamps(file, labels, timeSize)
+		d = rdpcap(current)
+		data = dp.timestamps(d,  size=int(timeSize))
 
 		predictions =  model.predict(data)
 
 		for i in range(len(predictions)):
 			if int(predictions[i]) == 1:
-				print("anomaly found between " + str((i-1)*timeSize) + ' and  ' + str(i*timeSize))
+				line = "anomaly found between " + str((i)*timeSize) + ' and  ' + str(i+1*timeSize)
+				print(line) 
+				f.write(line)
 		
+		f.write('If any anomalies have been detected above ')
+		if 1 in predictions:
+			outfile = str(counter) + 'Anomaly.pcap'
+			f.write('Abova anomalies can be viewed in file ' + outfile)
+			wrpcap(outfile, d)
+			counter += 1
+		
+		f.write("\n \n")
+
 		while latest_file == current:
-			list_of_files = glob.glob('/path/to/folder/*.pcapng') # may need changed to .pcap
-			latest_file = max(list_of_files, key=os.path.getmtime) # needs to change to getctime on Windows
-			time.sleep(5)
+			list_of_files = glob('live_captures/*.pcapng') # may need changed to .pcap
+			latest_file = max(list_of_files, key=os.path.getctime) # needs to change to getctime on Windows
+			time.sleep(50)
 			
 		current = latest_file
 
@@ -306,9 +325,10 @@ def detectionFunc(modelFile, timeSize):
 '''
 Function for finding best model including data processing
 '''
-def liveAnalysis(modelFile):
+def liveAnalysis(modelFile, freq=5):
+	print(modelFile)
 	captureThread = Thread(target=captureFunc(), daemon=True).start()
-	detectionThread = Thread(target=lambda: detectionFunc(modelFile), daemon=True).start()
+	detectionThread = Thread(target=lambda: detectionFunc(modelFile, freq), daemon=True).start()
 	
 
 
@@ -323,7 +343,7 @@ if __name__ == "__main__":
 	#labels = fm.toList('data/timestamps/training45mClassEDITED.txt') # generate target list
 	#training, targets = dp.timestamps(openedFile, labels, 1)
 	#dp.timestampSize(openedFile, labels)
-	tn, tr, on, opr, freq = modelSelectionNoProcessing('data/evaluation/WADI_attackdata.csv', 'data/evaluation/WADI_attackdataClass.txt')
+	#tn, tr, on, opr, freq = modelSelectionNoProcessing('data/evaluation/WADI_attackdata.csv', 'data/evaluation/WADI_attackdataClass.txt')
 	#print(tr)
-
-
+	#liveAnalysis(modelFile=
+	pass
