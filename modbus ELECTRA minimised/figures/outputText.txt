@@ -1,0 +1,9 @@
+Time taken to process = 830.7446246147156
+Best model found was: DecisionTree
+Training data size:   16289
+Test data size:   146604
+Class imbalance:
+	Normal:  0.5894114541447453
+	Abnormal:  0.41058854585525467
+7394209
+	Abnormal:  0.35412026726057905
