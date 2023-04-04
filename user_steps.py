@@ -16,6 +16,7 @@ warnings.warn = warn
 
 import os
 import glob
+import json
 
 import numpy as np
 import pandas as pd
@@ -24,12 +25,15 @@ import data_processing as dp
 import model_selection as ms 
 import model_files as fm
 import graph_production as gp
+from numpy import savetxt
 
 from scapy.all import *
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 from threading import Thread
 import time 
+from sklearn.pipeline import make_pipeline
+
 '''
 Function for finding best model including data processing
 '''
@@ -41,8 +45,7 @@ def fullToLive(file, targetFile):
 	training, targets, freq = dp.timestamps(openedFile, labels) # transform training data and targets
 
 	print(training.head(10))
-	training.to_csv('data/timestamps/52minuteTIMESTAMPS.csv')
-	dp.preprocessData(training, targets)
+	#training.to_csv('data/timestamps/52minuteTIMESTAMPS.csv')
 	
 	val = len(training)
 	split = round(0.8 * len(training))
@@ -59,10 +62,22 @@ def fullToLive(file, targetFile):
 
 	model_names, results, pipelines = ms.trainModels(trainX, trainY) #train the initial models
 	best_model_names = ms.evaluateModels(results, model_names, 3) # find the 3 best models
+	x, reduc, scaler =  dp.preprocessData(training, targets, pipelines, best_model_names[-1:])
+
+	trainX = x[:split]
+	testX = x[split:]
+	print('Best Preprocessing Found')
+
 	tuned_model_names, tuned_results, tuned_models = ms.hyperparameterTuning(best_model_names, pipelines, trainX, trainY)
 	final_name, final_model = ms.evaluateModels(tuned_results, tuned_model_names, 1, tuned_models)
+	print(final_name)
 	final_name = final_name[0]
-	fm.saveBestModel(final_model, final_name, nameFile=False)
+	if reduc != None or scaler != None:
+		pipe = fm.planPipeline(final_model, reduc, scaler)
+		fm.saveBestModel(pipe, final_name, nameFile=False)
+	else:
+		fm.saveBestModel(final_model, final_name, nameFile=False)
+
 
 	gp.generatePlots(results, model_names, "Training")
 	gp.generatePlots(tuned_results, tuned_model_names, "Optimised")
@@ -78,6 +93,12 @@ def fullToLive(file, targetFile):
 	f.write("	Normal:  " + str(n) + "\n")
 	f.write("	Abnormal:  " + str(a) + "\n")
 	f.close()
+
+	print(results)
+	print('\n \n \n \n')
+	print(tuned_model_names)
+	print('\n \n')
+	print(tuned_results)
 	return(model_names, results, tuned_model_names, tuned_results, freq)
 
 '''
@@ -104,27 +125,14 @@ def modelSelectionNoProcessing(file, targets):
 	training = training.reset_index()
 	training['label'] = targets
 	training = training.replace((np.inf, -np.inf, np.nan), 0).reset_index(drop=True)
-	#training = training.dropna()
+	training = training.loc[:,training.apply(pd.Series.nunique) != 1]
+	training = training.dropna()
 	targets = training['label']
 	training =  training.drop('label', axis=1)
 	training = training.reset_index()
 	print(training.head(5))
-
-	pre = dp.preprocessData(training, targets)
-	#training =  pre.transform(training)
-
-	#pca = PCA(n_components=30)
-	#training = pca.fit_transform(training)
-	#print(pca.explained_variance_ratio_)
-	#print(pca.singular_values_)
-	#training = dp.kBestFeatures(training, targets)
-
-	#scale_features_std = StandardScaler()
-	#features_train = scale_features_std.fit_transform(training)
-	
-
 	val = len(training)
-	split = round(0.8 * len(training))
+	split = round(0.4 * len(training))
 	trainX = training[:split]
 	trainY = targets[:split]
 	testX = training[split:]
@@ -134,16 +142,30 @@ def modelSelectionNoProcessing(file, targets):
 	n, a =gp.class_balance_binary(trainY)
 	print(n, a)
 
-	model_names, results, pipelines = ms.trainModels(trainX, trainY) #train the initial models
+	model_names, results, pipelines = ms.trainModels(trainX, trainY) #train the initial model
 	best_model_names = ms.evaluateModels(results, model_names, 3) # find the 3 best models
-	tuned_model_names, tuned_results, tuned_models = ms.hyperparameterTuning(best_model_names, pipelines, trainX, trainY)
-	final_name, final_model = ms.evaluateModels(tuned_results, tuned_model_names, 1, tuned_models)
-	final_name = final_name[0]
-	fm.saveBestModel(final_model, final_name, nameFile=False)
+	print(best_model_names[-1:])
+	x, reduc, scaler =  dp.preprocessData(training, targets, pipelines, best_model_names[-1:])
 
+	trainX = x[:split]
+	testX = x[split:]
+	print('Best Preprocessing Found')
+
+	tuned_model_names, tuned_results, tuned_models = ms.hyperparameterTuning(best_model_names, pipelines, trainX, trainY)
+	print('Models Tuned')
+	final_name, final_model = ms.evaluateModels(tuned_results, tuned_model_names, 1, tuned_models)
+	print('Best Model found')
+	final_name = final_name[0]
+	if reduc != None or scaler != None:
+		pipe = fm.planPipeline(final_model, reduc, scaler)
+		fm.saveBestModel(pipe, final_name, nameFile=False)
+	else:
+		fm.saveBestModel(final_model, final_name, nameFile=False)
+	print('Model Saved')
 	gp.generatePlots(results, model_names, "Training")
 	gp.generatePlots(tuned_results, tuned_model_names, "Optimised")
 	gp.generateUnseenData(final_model, testX, testY, trainX, trainY, 'Best')
+	print("Plots Generated")
 
 	end = time.time() - start
 	f.write("Time taken to process = " + str(end))
@@ -155,14 +177,18 @@ def modelSelectionNoProcessing(file, targets):
 	f.write("	Normal:  " + str(n) + "\n")
 	f.write("	Abnormal:  " + str(a) + "\n")
 	f.close()
+
+	print(results)
+	print('\n \n \n \n')
+	print(tuned_model_names)
+	print('\n \n')
+	print(tuned_results)
 	return(model_names, results, tuned_model_names, tuned_results)
 
 def modelSelection1File(file):
 	start = time.time()
 	print('opening outputfile')
 	f =  open(('figures/outputText.txt'), "w")
-	#openedFile = rdpcap(file)
-	#labels = fm.toList(targetFile) # generate target list
 	print('opening file')
 	print(file)
 	training = pd.read_csv(file)
@@ -197,12 +223,23 @@ def modelSelection1File(file):
 	print('initial evaluation')
 	best_model_names = ms.evaluateModels(results, model_names, 3) # find the 3 best models
 	print("initial best models found")
+	x, reduc, scaler =  dp.preprocessData(training, targets, pipelines, best_model_names[-1:])
+	trainX = x[:split]
+	testX = x[split:]
+	print("Best Preprocessing found")
+
 	tuned_model_names, tuned_results, tuned_models = ms.hyperparameterTuning(best_model_names, pipelines, trainX, trainY)
 	print("models tuned")
 	final_name, final_model = ms.evaluateModels(tuned_results, tuned_model_names, 1, tuned_models)
 	print("Best model found")
+	print(final_name)
 	final_name = final_name[0]
-	fm.saveBestModel(final_model, final_name, nameFile=False)
+	if reduc != None or scaler != None:
+		pipe = fm.planPipeline(final_model, reduc, scaler)
+		print("pipeline constructed")
+		fm.saveBestModel(pipe, final_name, nameFile=False)
+	else:
+		fm.saveBestModel(final_model, final_name, nameFile=False)
 	print('best model saved')
 
 	gp.generatePlots(results, model_names, "Training")
@@ -221,6 +258,11 @@ def modelSelection1File(file):
 	f.write("	Normal:  " + str(n) + "\n")
 	f.write("	Abnormal:  " + str(a) + "\n")
 	f.close()
+
+	print(results)
+	print('\n \n \n \n')
+	print(tuned_model_names)
+	print('\n \n')
 	print(tuned_results)
 	return(model_names, results, tuned_model_names, tuned_results)
 '''

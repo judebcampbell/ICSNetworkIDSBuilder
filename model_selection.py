@@ -112,7 +112,8 @@ def hyperparameterTuning(model_names, pipelines, X, Y, k=5):
 						)
 
 			results.append(crossv_results)
-			tuned_models.append(search.best_estimator_)
+			tuned_models.append((pipe, (search.best_estimator_)))
+			#tuned_models.append(search.best_estimator_)
 
 	return(model_names, results, tuned_models)
 
@@ -156,14 +157,19 @@ def evaluateModels(results, modelnames, n=3, models = None):
 	
 	#sort the means and get their index for finding model/model name
 	locations = sorted(range(len(means)), key=lambda i: means[i])[-n:]
+	print(locations)
+	print("information about best models Slay!")
 
 	for l in locations:
 		print("\n" +  str(modelnames[l]) + " Average F1: " + str(means[l]) + " Standard Deviation: " + str(stds[l]))
 		best_models_names.append(modelnames[l])
 
 		if models != None:
-			best_model = models[l]
-
+			for pipe, model in models:
+				if pipe == modelnames[l]:
+					best_model = model
+			print(best_model)
+			
 	if models != None:
 		return(best_models_names, best_model)
 	else:

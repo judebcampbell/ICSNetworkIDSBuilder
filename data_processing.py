@@ -16,8 +16,13 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.preprocessing import MaxAbsScaler
 
 from sklearn.model_selection import train_test_split
-from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import f1_score
+
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.linear_model import SGDClassifier
+from sklearn.naive_bayes import GaussianNB
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.neighbors import KNeighborsClassifier
 
 '''
 Function to read in target classes into a list
@@ -84,10 +89,6 @@ def timestampSize(file,label, windowSize=20):
 			ab.append(abnormal)
 
 	return final_eval[-1]
-
-def kBestFeatures(file, label):
-	x = SelectKBest(k=20).fit_transform(file, label)
-	return(x)
 
 '''
 Function to Generate Features over the previous x seconds
@@ -252,8 +253,44 @@ def timestamps(file, labels=None, size=None):
 	
 	return(features)
 
+def kBestFeatures(file, label, model):
+	starter = np.arange(start=10, stop=len(file.columns), step=10)
+	print(starter)
+	l = [5, 7]
+	for i in range(len(starter)):
+		l.append(starter[i])
+	print(l)
 
-def preprocessData(x, y):
+	xs = []
+	red = []
+
+	for v in l:
+		kt = SelectKBest(k=int(v)).fit(file, label)
+		xs.append(kt.transform(file))
+		red.append(kt)
+	
+	xs.append(file)
+	red.append(None)
+	f1s = [] 
+
+	for x in xs:
+		X_train, X_test, y_train, y_test = train_test_split(file, label, shuffle=False)
+		#clf = GaussianNB()
+		model.fit(X_train, y_train)
+		predicts = model.predict(X_test)
+		f1s.append(f1_score(y_test, predicts))
+
+	print(f1s)
+	locations = sorted(range(len(f1s)), key=lambda i: f1s[i])
+	print(locations)
+	print(locations[0])
+	print(red[locations[0]])
+	return(red[locations[0]])
+
+	#x = SelectKBest(k=20).fit_transform(file, label)
+	#return(x)
+
+def scaleData(x, y, model):
 	xs = [x]
 
 
@@ -272,16 +309,31 @@ def preprocessData(x, y):
 
 	for x in xs:
 		X_train, X_test, y_train, y_test = train_test_split( x, y, shuffle=False)
-		clf = DecisionTreeClassifier(random_state=42)
-		clf.fit(X_train, y_train)
-		predicts = clf.predict(X_test)
+		#clf = GaussianNB()
+		model.fit(X_train, y_train)
+		predicts = model.predict(X_test)
 		f1s.append(f1_score(y_test, predicts))
 
 	print(f1s)
 	locations = sorted(range(len(f1s)), key=lambda i: f1s[i])
+	print(locations)
 	print(locations[0])
 	print(preprocess[locations[0]])
 	return(preprocess[locations[0]])
+
+def preprocessData(x, y, pipelines, target):
+	for pipe, model in pipelines:
+		if pipe == target[0]:
+			print("Best initial model found")
+			print(pipe)
+			reduc = kBestFeatures(x, y, model)
+			if reduc != None:
+				x = reduc.transform(x)
+			pre = scaleData(x, y, model)
+			if pre != None:
+				x = pre.transform(x)
+	
+	return(x, reduc, pre)
 
 def electraTimestamps(file, labels):
 	size = 100

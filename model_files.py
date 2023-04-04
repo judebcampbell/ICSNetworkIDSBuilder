@@ -5,6 +5,7 @@ contains all functions related to the saving and open necessary saved models for
 '''
 import pickle 
 from datetime import datetime
+from sklearn.pipeline import make_pipeline
 
 '''
 Function saves best model for use at a later date
@@ -14,6 +15,7 @@ inputs:
 	nameFile - if True, user can input file name
 '''
 def saveBestModel(model, modelName='FinalModel', nameFile = False):
+
 	if nameFile == False:
 		filename = str(modelName) + datetime.today().strftime('%Y-%m-%d') + '.sav'
 	else:
@@ -24,7 +26,15 @@ def saveBestModel(model, modelName='FinalModel', nameFile = False):
 	pickle.dump(model, open(filename, 'wb'))
 	#print("\nModel Saved as: " + filename)
 
-
+def planPipeline(model, columndrops, scaler):
+	if scaler == None:
+		pipe = make_pipeline(columndrops, model)
+	if columndrops == None:
+		pipe = make_pipeline(scaler, model)
+	else:
+		pipe = make_pipeline(columndrops, scaler, model)
+	print(pipe)
+	return(pipe)
 
 def openModel(filename):
 	return(pickle.load(open(filename, 'rb')))
