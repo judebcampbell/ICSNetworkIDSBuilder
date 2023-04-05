@@ -573,5 +573,9 @@ class Ui_MainWindow(object):
         model = self.modelFileINPUT.text()
         try:
             us.liveAnalysis(modelFile=model, freq=freq)
+            while True:
+                time.sleep(300)
+                text = open('figures/outputText.txt').read()
+                self.OUTPUTstats.setPlainText(text)
         except:
             print("ERROR QUEEN")

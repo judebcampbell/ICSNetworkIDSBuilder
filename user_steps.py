@@ -330,11 +330,6 @@ def liveAnalysis(modelFile, freq=5):
 	captureThread = Thread(target=captureFunc(), daemon=True).start()
 	detectionThread = Thread(target=lambda: detectionFunc(modelFile, freq), daemon=True).start()
 	
-
-
-
-
-
 # Testing section to ensure functions work correctly
 # 	i.e. no missing imports
 
