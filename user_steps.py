@@ -130,16 +130,20 @@ def modelSelectionNoProcessing(file, targets):
 	targets = training['label']
 	training =  training.drop('label', axis=1)
 	training = training.reset_index()
+
+	training2 = training[training.columns[:-1]]
+	training = training2
+
 	print(training.head(5))
 	val = len(training)
-	split = round(0.4 * len(training))
+	split = round(0.3 * len(training))
 	trainX = training[:split]
 	trainY = targets[:split]
 	testX = training[split:]
 	testY = targets[split:]
 
 	print("\n class balance normal to abnormal in the produced data")
-	n, a =gp.class_balance_binary(trainY)
+	n, a = gp.class_balance_binary(trainY)
 	print(n, a)
 
 	model_names, results, pipelines = ms.trainModels(trainX, trainY) #train the initial model
@@ -161,11 +165,15 @@ def modelSelectionNoProcessing(file, targets):
 		fm.saveBestModel(pipe, final_name, nameFile=False)
 	else:
 		fm.saveBestModel(final_model, final_name, nameFile=False)
+	
 	print('Model Saved')
 	gp.generatePlots(results, model_names, "Training")
 	gp.generatePlots(tuned_results, tuned_model_names, "Optimised")
 	gp.generateUnseenData(final_model, testX, testY, trainX, trainY, 'Best')
 	print("Plots Generated")
+
+	final_model =  pipe
+
 
 	end = time.time() - start
 	f.write("Time taken to process = " + str(end))
@@ -195,21 +203,49 @@ def modelSelection1File(file):
 	print('Read Training file')
 	print(training.head(5))
 	#training =  training.iloc[:1000000]
-	labels, c = pd.factorize(training['label'])
-	labels = labels.tolist()
+	try:
+		#print(training[training.columns[-1]])
+		t = training[training.columns[-1]]
+		print("Values ARE:   \n")
+		print(t.unique())
+		labels, c = pd.factorize(training[training.columns[-1]])
+		targets = labels.tolist()
+		training2 = training[training.columns[:-1]]
+		training = training2
+	except:
+		print('class label not called Normal/Attack')
+		return()
+
 	print(len(set(labels)))
 	print('Extracted targets')
 
-	training = training.drop(['label'], axis=1)
-	
-	training, targets = dp.electraTimestamps(training, labels)
+	print(training.dtypes)
+	#training, targets = dp.electraTimestamps(training, labels)
+
+	to_del = []
+	for column in training:
+		if training[column].dtypes == 'object':
+			col_id = str(column) + '_id'
+			training[col_id], x = pd.factorize(training[column])
+			to_del.append(column)
+
+	training =  training.drop(to_del, axis=1)
+	training = training.reset_index()
+	training['label'] = targets
+	training = training.replace((np.inf, -np.inf, np.nan), 0).reset_index(drop=True)
+	training = training.loc[:,training.apply(pd.Series.nunique) != 1]
+	training = training.dropna()
+	targets = training['label']
+	training =  training.drop('label', axis=1)
+	training = training.reset_index()
+
 	print('Data ready')
 	print(training.head(5))
 	print(targets)
 
 
 	val = len(training)
-	split = round(0.1 * len(training))
+	split = round(0.15 * len(training))
 	trainX = training[:split]
 	trainY = targets[:split]
 	testX = training[split:]
@@ -217,7 +253,7 @@ def modelSelection1File(file):
 	print("Data split for training and testing. ")
 
 	print("\n class balance normal to abnormal in the produced data")
-	n, a =gp.class_balance_binary(targets)
+	n, a =gp.class_balance_binary(trainY)
 	print(n, a)
 
 	model_names, results, pipelines = ms.trainModels(trainX, trainY) #train the initial models
@@ -248,6 +284,8 @@ def modelSelection1File(file):
 	gp.generateUnseenData(final_model, testX, testY, trainX, trainY, 'Best')
 	print("plots generated")
 
+	final_model =  pipe
+
 	end = time.time() - start
 	print("writing stats to file")
 	f.write("Time taken to process = " + str(end))
@@ -261,7 +299,7 @@ def modelSelection1File(file):
 	f.close()
 
 	print(results)
-	print('\n \n \n \n')
+	print('\n \n')
 	print(tuned_model_names)
 	print('\n \n')
 	print(tuned_results)

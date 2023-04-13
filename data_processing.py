@@ -282,6 +282,8 @@ def kBestFeatures(file, label, model):
 
 	print(f1s)
 	locations = sorted(range(len(f1s)), key=lambda i: f1s[i])
+	if len(set(locations)) == 1:
+		return(None)
 	print(locations)
 	print(locations[0])
 	print(red[locations[0]])
@@ -317,9 +319,9 @@ def scaleData(x, y, model):
 	print(f1s)
 	locations = sorted(range(len(f1s)), key=lambda i: f1s[i])
 	print(locations)
-	print(locations[0])
-	print(preprocess[locations[0]])
-	return(preprocess[locations[0]])
+	print(locations[-1])
+	print(preprocess[locations[-1]])
+	return(preprocess[locations[-1]])
 
 def preprocessData(x, y, pipelines, target):
 	for pipe, model in pipelines:
@@ -341,6 +343,7 @@ def electraTimestamps(file, labels):
 	total_time = file['Time'].loc[len(file)-1] - file['Time'].loc[0]
 	total_count = len(file)
 	
+	print(file.head(5))
 	print(total_count)
 	#print(labels)
 	counter = 0

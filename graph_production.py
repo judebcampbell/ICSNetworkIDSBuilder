@@ -47,6 +47,7 @@ def seperatedBarChart(fit_times, model_names, name):
 	df =  pd.DataFrame(ordered, columns=columns)
 
 	df.plot(kind='bar', colormap='Set3', subplots=True, figsize=(5,6))
+	plt.get_legend().remove()
 	plt.tight_layout()
 	plt.xlabel("Training split")
 	plt.ylabel("Time in Seconds")
@@ -234,7 +235,8 @@ def trainTestBar(predTr, trainY, pred, y, type):
 	fig, ax = plt.subplots()
 	bar1 = ax.bar(x_pos, training, bar_width, color=color1[2], label="Training Data")
 	bar2 = ax.bar(x_pos + bar_width, tests, bar_width, color=color1[6], label="Test Data")
-
+	ax.bar_label(bar1, fmt='%.2f')
+	ax.bar_label(bar2, fmt='%.2f')
 	ax.set_xlabel("Metric")
 	ax.set_ylabel("Performance")
 	ax.set_title("Performance of metrics on Training and Test Data")
