@@ -1,7 +1,12 @@
 '''
-data_processing module
+IDS Builder 
+April 2023
+Jude Campbell - 2382182c
 
-contains all functinos necessary to pre-process data
+data_processing module
+	Modeule contains all functinos necessary
+	to pre-process data as appropriate for use
+	in the model selection or live detection steps
 '''
 
 

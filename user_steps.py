@@ -1,8 +1,11 @@
 '''
-user_steps module 
+IDS Builder 
+April 2023
+Jude Campbell - 2382182c
 
-Contains different functions that combine the other modules into different user story steps
-Functions are based of use case diagram
+User Steps module 
+	Contains different functions that combine the other modules 
+	into different user story steps 
 '''
 
 '''
