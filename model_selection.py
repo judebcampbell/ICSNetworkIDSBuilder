@@ -1,7 +1,12 @@
 '''
-model_selection module
+IDS Builder 
+April 2023
+Jude Campbell - 2382182c
 
-Contains all functions related to training and tuning models
+model_selection module
+	Contains all functions related to training and tuning models
+	description of adding future models is included in the readme
+
 '''
 
 import json

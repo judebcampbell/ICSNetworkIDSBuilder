@@ -1,6 +1,13 @@
 '''
-Graph Production Module
+IDS Builder 
+April 2023
+Jude Campbell - 2382182c
 
+Graph Production Module
+	Module is responsible for producing all of the 
+	output graphs shown to the user once the best 
+	model has been identified. 
+	
 Contains all functions for:
 	- sorting data produced during training/optimisation
 	- generating and saving plots

@@ -1,3 +1,13 @@
+'''
+IDS Builder 
+April 2023
+Jude Campbell - 2382182c
+
+GUI 
+    file contains code to open the GUI for use.
+    GUI required updatedWindow.py which is where UI 
+    features are defined. 
+'''
 import sys
 from PyQt6 import QtWidgets, uic
 

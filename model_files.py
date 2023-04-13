@@ -1,7 +1,11 @@
 '''
-model_files module
+IDS Builder 
+April 2023
+Jude Campbell - 2382182c
 
-contains all functions related to the saving and open necessary saved models for use
+model_files module
+	contains all functions related to the saving and open 
+	necessary saved models for use.
 '''
 import pickle 
 from datetime import datetime
