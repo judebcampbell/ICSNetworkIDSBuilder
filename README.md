@@ -20,7 +20,8 @@ This will automatically open the GUI (it takes a moment), from this you can inpu
 
 Outputs will be saved in the figures location - if you want to fave these for future evaluation they must be copied out of this as the graphs are overwritten each time. 
 
-The GUI for live detection is unfinished. I have not successfully been able to connect the output box to the updating output. This should not be hard to correct but it currently runs without issue but the GUI freezers. Because the function never updates. 
+**The GUI for live detection is unfinished. I have not successfully been able to connect the output box to the updating output. This should not be hard to correct but it currently runs without issue but the GUI freezers. Because the function never updates. 
+**
 
 The best model will be saved in the best_models sub directory - with the name of the model and the date. If preprocessing has been identified it will be included in this file but the name will not change. 
 
@@ -49,4 +50,8 @@ If additional models are going to be added to the code the following steps need 
 Model files deals with saving to files and opening files.
 
 ### User Steps
-Functions combine modules from the previous 4 modules to complete different user requests
+Functions combine modules from the previous 4 modules to complete different user requests. This includes 3 functions that can be called. One for seperated data and labels where data is a .csv. One for seperated data and labels that will include preprocessing from .pcap to df, and the last one is for integrated .csv data and labels. 
+
+Both the functions for .csv data include adaptation of columns to ml appropriate columns and the automatic dropping of rows with inifinity and NAN values. This should likely be abstracted out into a seperate function.
+
+This module also includes the 3 live detection functions. One for data capturing, one for data prediction and a leader function to create the threads. In the Data Capture function the following line needs to be updated to be the correct network stream. **_find code and add value_**
