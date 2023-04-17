@@ -8,6 +8,8 @@ Use location requires the following folders:
 	2. figures
 	3. live_captures
 		a. evaluation
+## Assumptions
+The system assumes that the data files used are either directly in line from the current folder or in a subfolder. It uses full relative addresses. 
 
 ## UI 
 UI is run by running the GUI.py file in the command line this is:
@@ -18,6 +20,8 @@ This will automatically open the GUI (it takes a moment), from this you can inpu
 
 Outputs will be saved in the figures location - if you want to fave these for future evaluation they must be copied out of this as the graphs are overwritten each time. 
 
+The GUI for live detection is unfinished. I have not successfully been able to connect the output box to the updating output. This should not be hard to correct but it currently runs without issue but the GUI freezers. Because the function never updates. 
+
 The best model will be saved in the best_models sub directory - with the name of the model and the date. If preprocessing has been identified it will be included in this file but the name will not change. 
 
 ## Modules
@@ -25,6 +29,10 @@ A brief overview of the modules goals are described below:
 
 ### Data Processing 
 Contains all functions related to changing input data to feature vectors. File also includes the currently implemented basic preprocessing which considers k-best features and 3 data scaling methods. 
+
+Not discussed in the Paper is the use preprocessing which has been implemented minimally. The system will automatically trial the preprocessing on the best initial model. It will attempt to find the K best feature, where 5 < K < no of input features. It will also attempt to compare performance of the raw data to some scaling methods: Standard Scaler, Min Max Abs Scaler and Robust Scaler.
+
+When used; if a best preprocessing is identified then the system will automatically preprocess the data is has and add the the preprocessing to the saved best model to create a saved best pipeline. 
 
 ### Model Selection
 Contains all functions related to training, optimising and selection models.
